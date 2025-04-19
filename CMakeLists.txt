@@ -4,6 +4,7 @@ project(SHADERed)
 
 set(CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake")
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin")
+set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
 # source code
 set(SOURCES
@@ -144,7 +145,7 @@ if (UNIX)
 endif()
 
 # sdl2
-if(WIN32 OR APPLE OR NOT ${USE_PKG_CHECK_SDL})
+if(WIN32 OR APPLE OR NOT ${USE_PKG_CHECK_GLFW})
   find_package(SDL2 REQUIRED)
 else()
   pkg_check_modules(SDL2 REQUIRED sdl2)
