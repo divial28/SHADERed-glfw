@@ -545,7 +545,7 @@ namespace ed {
 			if (settings->General.AutoScale) {
 				// get dpi
 				float dpi;
-				int wndDisplayIndex = SDL_GetWindowDisplayIndex(m_ui->GetSDLWindow());
+				int wndDisplayIndex = SDL_GetWindowDisplayIndex(m_ui->GetGLFWWindow());
 				SDL_GetDisplayDPI(wndDisplayIndex, NULL, &dpi, NULL);
 				dpi /= 96.0f;
 

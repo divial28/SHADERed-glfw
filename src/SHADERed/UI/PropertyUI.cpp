@@ -1346,7 +1346,7 @@ namespace ed {
 				ImGui::PopItemWidth();
 				ImGui::SameLine();
 				if (ImGui::Button("REFRESH##prop_img_refresh")) {
-					int buttonid = UIHelper::MessageBox_YesNoCancel(m_ui->GetSDLWindow(), "Are you sure that you want to update image's content?");
+					int buttonid = UIHelper::MessageBox_YesNoCancel(m_ui->GetGLFWWindow(), "Are you sure that you want to update image's content?");
 					
 					if (buttonid == 0) {
 						GLuint tex = 0;

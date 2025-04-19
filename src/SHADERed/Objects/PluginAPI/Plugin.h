@@ -160,7 +160,7 @@ namespace ed {
 
 		virtual bool Init(bool isWeb, int sedVersion) = 0;
 		virtual void InitUI(void* ctx) = 0;
-		virtual void OnEvent(void* e) = 0; // e is &SDL_Event
+		virtual void OnEvent(void* e) = 0; // e is &AppEvent
 		virtual void Update(float delta) = 0;
 		virtual void Destroy() = 0;
 

@@ -1,3 +1,4 @@
+#include <SHADERed/AppEvent.h>
 #include <SHADERed/GUIManager.h>
 #include <SHADERed/InterfaceManager.h>
 #include <SHADERed/Objects/DefaultState.h>
@@ -44,7 +45,7 @@ namespace ed {
 	}
 #endif
 
-	void PluginManager::OnEvent(const SDL_Event& e)
+	void PluginManager::OnEvent(const AppEvent& e)
 	{
 		for (const auto& plugin : m_plugins)
 			plugin->OnEvent((void*)&e);
@@ -714,13 +715,13 @@ namespace ed {
 				p->HandlePluginMessage(myName, msg, msgLen);
 		};
 		plugin->ToggleFullscreen = [](void* UI) {
-			SDL_Window* wnd = ((GUIManager*)UI)->GetSDLWindow();
+			GLFWwindow* wnd = ((GUIManager*)UI)->GetGLFWWindow();
 			Uint32 wndFlags = SDL_GetWindowFlags(wnd);
 			bool isFullscreen = wndFlags & SDL_WINDOW_FULLSCREEN_DESKTOP;
 			SDL_SetWindowFullscreen(wnd, (!isFullscreen) * SDL_WINDOW_FULLSCREEN_DESKTOP);
 		};
 		plugin->IsFullscreen = [](void* UI) -> bool {
-			SDL_Window* wnd = ((GUIManager*)UI)->GetSDLWindow();
+			GLFWwindow* wnd = ((GUIManager*)UI)->GetGLFWWindow();
 			return SDL_GetWindowFlags(wnd) & SDL_WINDOW_FULLSCREEN_DESKTOP;
 		};
 		plugin->TogglePerformanceMode = [](void* UI) {

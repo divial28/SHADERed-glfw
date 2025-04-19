@@ -99,7 +99,7 @@ set(SOURCES
 	libs/imgui/imgui_widgets.cpp
 	libs/imgui/imgui.cpp
 	libs/imgui/examples/imgui_impl_opengl3.cpp
-	libs/imgui/examples/imgui_impl_sdl.cpp
+	libs/imgui/examples/imgui_impl_glfw.cpp
 	libs/SPIRVCross/spirv_cfg.cpp
 	libs/SPIRVCross/spirv_cross.cpp
 	libs/SPIRVCross/spirv_cross_util.cpp
@@ -144,11 +144,11 @@ if (UNIX)
   find_package(PkgConfig REQUIRED)
 endif()
 
-# sdl2
+# glfw3
 if(WIN32 OR APPLE OR NOT ${USE_PKG_CHECK_GLFW})
-  find_package(SDL2 REQUIRED)
+  find_package(GLFW REQUIRED)
 else()
-  pkg_check_modules(SDL2 REQUIRED sdl2)
+  pkg_check_modules(GLDW REQUIRED glfw3)
 endif()
 
 # opengl
@@ -205,7 +205,7 @@ set_target_properties(SHADERed PROPERTIES
 )
 
 # include directories
-target_include_directories(SHADERed PRIVATE ${SDL2_INCLUDE_DIRS} ${GLM_INCLUDE_DIRS} ${GLEW_INCLUDE_DIRS} ${OPENGL_INCLUDE_DIRS} ${ASSIMP_INCLUDE_DIR})
+target_include_directories(SHADERed PRIVATE ${GLFW_INCLUDE_DIRS} ${GLM_INCLUDE_DIRS} ${GLEW_INCLUDE_DIRS} ${OPENGL_INCLUDE_DIRS} ${ASSIMP_INCLUDE_DIR})
 target_include_directories(SHADERed PRIVATE src libs libs/glslang libs/SPIRV-VM/inc)
 if (NOT WIN32)
 	target_include_directories(SHADERed PRIVATE ${GTK_INCLUDE_DIRS})
@@ -216,17 +216,17 @@ target_link_libraries(SHADERed ${OPENGL_LIBRARIES} ${GLM_LIBRARY_DIRS} glslang S
 
 if(WIN32)
 	# link specific win32 libraries
-	target_link_libraries(SHADERed GLEW::GLEW SDL2::SDL2 SDL2::SDL2main)
+	target_link_libraries(SHADERed GLEW::GLEW GLFW::GLFW)
 
 elseif(UNIX AND NOT APPLE)
 	# link linux libraries
-	target_link_libraries(SHADERed ${GLEW_LIBRARIES} ${SDL2_LIBRARIES} ${GTK_LIBRARIES} ${CMAKE_DL_LIBS})
+	target_link_libraries(SHADERed ${GLEW_LIBRARIES} ${GLFW_LIBRARIES} ${GTK_LIBRARIES} ${CMAKE_DL_LIBS})
 
 	if (NOT DONT_LINK_FILESYSTEM)
 		target_link_libraries(SHADERed stdc++fs pthread m dl)
 	endif()
 elseif(APPLE)
-	target_link_libraries(SHADERed GLEW::GLEW ${SDL2_LIBRARIES} ${GTK_LIBRARIES} ${CMAKE_DL_LIBS})
+	target_link_libraries(SHADERed GLEW::GLEW ${GLFW_LIBRARIES} ${GTK_LIBRARIES} ${CMAKE_DL_LIBS})
 endif()
 
 if (NOT MSVC)

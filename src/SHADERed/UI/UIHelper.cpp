@@ -69,7 +69,7 @@ namespace ed {
 		};
 		const SDL_MessageBoxData messageboxdata = {
 			SDL_MESSAGEBOX_INFORMATION, /* .flags */
-			(SDL_Window*)window,		/* .window */
+			(GLFWwindow*)window,		/* .window */
 			"SHADERed",					/* .title */
 			msg.c_str(),				/* .message */
 			SDL_arraysize(buttons),		/* .numbuttons */

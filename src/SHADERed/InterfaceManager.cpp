@@ -431,13 +431,17 @@ namespace ed {
 			glBindBuffer(GL_ARRAY_BUFFER, 0);
 		} 
 	}
-	void InterfaceManager::OnEvent(const SDL_Event& e)
+
+	void InterfaceManager::OnEvent(const AppEvent& e)
 	{
 		Objects.OnEvent(e);
 	}
+	
 	void InterfaceManager::Update(float delta)
 	{
+
 	}
+
 	bool InterfaceManager::m_canDebug()
 	{
 		bool ret = true;

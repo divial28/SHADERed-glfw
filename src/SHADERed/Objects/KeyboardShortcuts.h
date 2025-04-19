@@ -4,7 +4,7 @@
 #include <string>
 #include <vector>
 
-#include <SDL2/SDL_events.h>
+#include <SHADERed/AppEvent.h>
 #include <SHADERed/Objects/PluginAPI/Plugin.h>
 
 namespace ed {
@@ -69,7 +69,7 @@ namespace ed {
 
 		inline void Detach(const std::string& name) { m_data.erase(name); }
 
-		void Check(const SDL_Event& e, bool codeHasFocus);
+		void Check(const AppEvent& e, bool codeHasFocus);
 
 	private:
 		bool m_canSolo(const std::string& name, int k);

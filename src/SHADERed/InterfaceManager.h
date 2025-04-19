@@ -1,5 +1,5 @@
 #pragma once
-#include <SDL2/SDL_events.h>
+#include <SHADERed/AppEvent.h>
 #include <SHADERed/Objects/DebugInformation.h>
 #include <SHADERed/Objects/DebugAdapterProtocol.h>
 #include <SHADERed/Objects/MessageStack.h>
@@ -19,7 +19,8 @@ namespace ed {
 		InterfaceManager(GUIManager* gui);
 		~InterfaceManager();
 
-		void OnEvent(const SDL_Event& e);
+		void OnEvent(const AppEvent& e);
+
 		void Update(float delta);
 
 		void DebugClick(glm::vec2 r);

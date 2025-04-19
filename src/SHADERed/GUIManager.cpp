@@ -1,4 +1,5 @@
-#include <SDL2/SDL_messagebox.h>
+#include <GL/glew.h>
+#include <GLFW/glfw3.h>
 #include <SHADERed/GUIManager.h>
 #include <SHADERed/InterfaceManager.h>
 #include <SHADERed/Objects/CameraSnapshots.h>
@@ -38,7 +39,7 @@
 #include <SHADERed/UI/FrameAnalysisUI.h>
 #include <SHADERed/UI/UIHelper.h>
 #include <imgui/examples/imgui_impl_opengl3.h>
-#include <imgui/examples/imgui_impl_sdl.h>
+#include <imgui/examples/imgui_impl_glfw.h>
 #include <imgui/imgui.h>
 #include <misc/ImFileDialog.h>
 
@@ -72,11 +73,10 @@ extern "C" {
 #define getByte(value, n) (value >> (n * 8) & 0xFF)
 
 namespace ed {
-	GUIManager::GUIManager(ed::InterfaceManager* objects, SDL_Window* wnd, SDL_GLContext* gl)
+	GUIManager::GUIManager(ed::InterfaceManager* objects, GLFWwindow* wnd)
 	{
 		m_data = objects;
 		m_wnd = wnd;
-		m_gl = gl;
 		m_settingsBkp = new Settings();
 		m_previewSaveSize = glm::ivec2(1920, 1080);
 		m_savePreviewPopupOpened = false;
@@ -134,10 +134,10 @@ namespace ed {
 		Settings::Instance().Load();
 		m_loadTemplateList();
 
-		SDL_GetWindowSize(m_wnd, &m_width, &m_height);
+		glfwGetWindowSize(m_wnd, &m_width, &m_height);
 
 		// set vsync on startup
-		SDL_GL_SetSwapInterval(Settings::Instance().General.VSync);
+		glfwSwapInterval(Settings::Instance().General.VSync ? 1 : 0);
 
 		// Initialize imgui
 		Logger::Get().Log("Initializing Dear ImGUI");
@@ -158,7 +158,7 @@ namespace ed {
 		style.WindowMenuButtonPosition = ImGuiDir_Right;
 
 		ImGui_ImplOpenGL3_Init(SDL_GLSL_VERSION);
-		ImGui_ImplSDL2_InitForOpenGL(m_wnd, *m_gl);
+		ImGui_ImplGlfw_InitForOpenGL(m_wnd, false);
 
 		ImGui::StyleColorsDark();
 
@@ -200,9 +200,10 @@ namespace ed {
 
 		// enable dpi awareness
 		if (Settings::Instance().General.AutoScale) {
-			float dpi = 0.0f;
-			int wndDisplayIndex = SDL_GetWindowDisplayIndex(wnd);
-			SDL_GetDisplayDPI(wndDisplayIndex, &dpi, NULL, NULL);
+			float dpi = 96.0f;
+			// FIXME: add support
+			// int wndDisplayIndex = SDL_GetWindowDisplayIndex(wnd);
+			// SDL_GetDisplayDPI(wndDisplayIndex, &dpi, NULL, NULL);
 			dpi /= 96.0f;
 
 			if (dpi <= 0.0f) dpi = 1.0f;
@@ -311,14 +312,29 @@ namespace ed {
 		delete m_createUI;
 		delete m_settingsBkp;
 
-		ImGui_ImplSDL2_Shutdown();
+		ImGui_ImplGlfw_Shutdown();
 		ImGui_ImplOpenGL3_Shutdown();
 		ImGui::DestroyContext();
 	}
+	
 
-	void GUIManager::OnEvent(const SDL_Event& e)
+	void GUIManager::OnEvent(const AppEvent& e)
 	{
-		ImGui_ImplSDL2_ProcessEvent(&e);
+		switch (e.type) {
+		case AppEvent::MouseButton:
+			ImGui_ImplGlfw_MouseButtonCallback(e.window, e.mouseButton.button, e.mouseButton.action, e.mouseButton.mods);
+			break;
+		case AppEvent::Scroll:
+			ImGui_ImplGlfw_ScrollCallback(e.window, e.scroll.xoffset, e.scroll.yoffset);
+			break;
+		case AppEvent::KeyPress:
+			ImGui_ImplGlfw_KeyCallback(e.window, e.keyPress.key, e.keyPress.scancode, e.mouseButton.action, e.keyPress.mods);
+			break;
+		case AppEvent::CharInput:
+			ImGui_ImplGlfw_CharCallback(e.window, e.charInput.c);
+			break;
+		default:;
+		}
 
 		if (m_splashScreen) {
 
@@ -326,7 +342,7 @@ namespace ed {
 		}
 
 		// check for shortcut presses
-		if (e.type == SDL_KEYDOWN) {
+		if (e.type == AppEvent::KeyPress) {
 			if (!(m_optionsOpened && ((OptionsUI*)m_options)->IsListening())) {
 				bool codeHasFocus = ((CodeEditorUI*)Get(ViewID::Code))->HasFocus();
 
@@ -335,7 +351,7 @@ namespace ed {
 					((CodeEditorUI*)Get(ViewID::Code))->RequestedProjectSave = false;
 				}
 			}
-		} else if (e.type == SDL_MOUSEMOTION)
+		} else if (e.type == AppEvent::CursorPos)
 			m_perfModeClock.Restart();
 		else if (e.type == SDL_DROPFILE) {
 
@@ -388,7 +404,7 @@ namespace ed {
 			SDL_free(droppedFile);
 		} else if (e.type == SDL_WINDOWEVENT) {
 			if (e.window.event == SDL_WINDOWEVENT_MOVED || e.window.event == SDL_WINDOWEVENT_MAXIMIZED || e.window.event == SDL_WINDOWEVENT_RESIZED) {
-				SDL_GetWindowSize(m_wnd, &m_width, &m_height);
+				glfwGetWindowSize(m_wnd, &m_width, &m_height);
 			}
 		}
 
@@ -424,12 +440,12 @@ namespace ed {
 				if (m_data->Parser.IsProjectModified())
 					projName = "*" + projName;
 
-				SDL_SetWindowTitle(m_wnd, ("SHADERed (" + projName + ")").c_str());
+				glfwSetWindowTitle(m_wnd, ("SHADERed (" + projName + ")").c_str());
 			} else {
 				if (m_data->Parser.IsProjectModified())
-					SDL_SetWindowTitle(m_wnd, "SHADERed (*)");
+					glfwSetWindowTitle(m_wnd, "SHADERed (*)");
 				else
-					SDL_SetWindowTitle(m_wnd, "SHADERed");
+					glfwSetWindowTitle(m_wnd, "SHADERed");
 			}
 
 			m_cacheProjectModified = m_data->Parser.IsProjectModified();
@@ -497,7 +513,7 @@ namespace ed {
 
 		// Start the Dear ImGui frame
 		ImGui_ImplOpenGL3_NewFrame();
-		ImGui_ImplSDL2_NewFrame(m_wnd);
+		ImGui_ImplGlfw_NewFrame();
 		ImGui::NewFrame();
 
 		// splash screen
@@ -1080,7 +1096,7 @@ namespace ed {
 
 	void GUIManager::m_splashScreenRender()
 	{
-		SDL_GetWindowSize(m_wnd, &m_width, &m_height);
+		glfwGetWindowSize(m_wnd, &m_width, &m_height);
 		float wndRounding = ImGui::GetStyle().WindowRounding;
 		float wndBorder = ImGui::GetStyle().WindowBorderSize;
 		ImGui::GetStyle().WindowRounding = 0.0f;
@@ -1920,7 +1936,7 @@ namespace ed {
 			ResetWorkspace();
 			m_data->Pipeline.New(false);
 
-			SDL_SetWindowTitle(m_wnd, "SHADERed");
+			glfwSetWindowTitle(m_wnd, "SHADERed");
 		} else {
 			m_data->Parser.SetTemplate(m_selectedTemplate);
 
@@ -1928,7 +1944,7 @@ namespace ed {
 			m_data->Pipeline.New();
 			m_data->Parser.SetTemplate(Settings::Instance().General.StartUpTemplate);
 
-			SDL_SetWindowTitle(m_wnd, ("SHADERed (" + m_selectedTemplate + ")").c_str());
+			glfwSetWindowTitle(m_wnd, ("SHADERed (" + m_selectedTemplate + ")").c_str());
 		}
 
 		std::string savePath = (std::filesystem::path(outputPath) / "project.sprj").generic_string();
@@ -1990,7 +2006,7 @@ namespace ed {
 		if (m_data->Renderer.IsPaused())
 			m_data->Renderer.Render(curSize.x, curSize.y);
 
-		SDL_SetWindowTitle(m_wnd, ("SHADERed (" + projName + ")").c_str());
+		glfwSetWindowTitle(m_wnd, ("SHADERed (" + projName + ")").c_str());
 	}
 
 	void GUIManager::SetCommandLineOptions(CommandLineOptionParser& options)
@@ -2435,7 +2451,7 @@ namespace ed {
 				std::string projName = m_data->Parser.GetOpenedFile();
 				projName = projName.substr(projName.find_last_of("/\\") + 1);
 
-				SDL_SetWindowTitle(m_wnd, ("SHADERed (" + projName + ")").c_str());
+				glfwSetWindowTitle(m_wnd, ("SHADERed (" + projName + ")").c_str());
 
 				// return cached state
 				if (m_saveAsRestoreCache) {
@@ -3189,9 +3205,10 @@ namespace ed {
 		});
 
 		KeyboardShortcuts::Instance().SetCallback("Window.Fullscreen", [=]() {
-			Uint32 wndFlags = SDL_GetWindowFlags(m_wnd);
-			bool isFullscreen = wndFlags & SDL_WINDOW_FULLSCREEN_DESKTOP;
-			SDL_SetWindowFullscreen(m_wnd, (!isFullscreen) * SDL_WINDOW_FULLSCREEN_DESKTOP);
+			// FIXME: implement
+			// Uint32 wndFlags = SDL_GetWindowFlags(m_wnd);
+			// bool isFullscreen = wndFlags & SDL_WINDOW_FULLSCREEN_DESKTOP;
+			// SDL_SetWindowFullscreen(m_wnd, (!isFullscreen) * SDL_WINDOW_FULLSCREEN_DESKTOP);
 		});
 	}
 	void GUIManager::m_checkChangelog()

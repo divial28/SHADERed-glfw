@@ -896,7 +896,7 @@ namespace ed {
 
 			if (wrappedMouse) {
 				m_mouseContact = ImVec2(ptX, ptY);
-				SDL_WarpMouseInWindow(m_ui->GetSDLWindow(), ptX, ptY);
+				SDL_WarpMouseInWindow(m_ui->GetGLFWWindow(), ptX, ptY);
 			}
 		}
 

@@ -2,6 +2,7 @@
 #include <windows.h>
 #endif
 
+#include <GL/glew.h>
 #include <GLFW/glfw3.h>
 #include <SHADERed/EditorEngine.h>
 #include <SHADERed/Objects/CommandLineOptionParser.h>
@@ -153,12 +154,33 @@ int main(int argc, char* argv[])
 	} else
 		ed::Logger::Get().Log("Initialized SDL2");
 
+	struct AppData {
+		ed::EditorEngine* engine = nullptr;
+		bool hasFocus = true;
+		bool minimized = false;
+		bool maximized = false;
+		bool fullscreen = false;
+		bool perfMode = false;
+		short wndWidth = 800;
+		short wndHeight = 600;
+		short wndPosX = -1;
+		short wndPosY = -1;
+	} appData;
+
+	bool& hasFocus = appData.hasFocus;
+	bool& minimized = appData.minimized;
+	bool& maximized = appData.maximized;
+	bool& fullscreen = appData.fullscreen;
+	bool& perfMode = appData.perfMode;
+	short& wndWidth = appData.wndWidth;
+	short& wndHeight = appData.wndHeight;
+	short& wndPosX = appData.wndPosX;
+	short& wndPosY = appData.wndPosY;
+
 	// load window size
 	std::string preloadDatPath = "data/preload.dat";
 	if (!ed::Settings::Instance().LinuxHomeDirectory.empty() && std::filesystem::exists(ed::Settings::Instance().LinuxHomeDirectory + preloadDatPath, fsError))
 		preloadDatPath = ed::Settings::Instance().ConvertPath(preloadDatPath);
-	short wndWidth = 800, wndHeight = 600, wndPosX = -1, wndPosY = -1;
-	bool fullscreen = false, maximized = false, perfMode = false;
 	std::ifstream preload(preloadDatPath);
 	if (preload.is_open()) {
 		ed::Logger::Get().Log("Loading window information from data/preload.dat");
@@ -247,7 +269,8 @@ int main(int argc, char* argv[])
 		ed::Logger::Get().Log("Initialized GLEW");
 
 	// create engine
-	ed::EditorEngine engine(wnd, &glContext);
+	appData.engine = new ed::EditorEngine(wnd);
+	ed::EditorEngine& engine = *appData.engine;
 	ed::Logger::Get().Log("Creating EditorEngine...");
 	engine.Create();
 	ed::Logger::Get().Log("Created EditorEngine");
@@ -290,72 +313,118 @@ int main(int argc, char* argv[])
 
 	// timer for time delta
 	ed::eng::Timer timer;
-	bool minimized = false;
-	bool hasFocus = true;
 
-	glfwSetWindowCloseCallback(wnd, [&](GLFWwindow* window){
+	glfwSetWindowCloseCallback(wnd, [](GLFWwindow* window){
+		auto d = reinterpret_cast<AppData*>(glfwGetWindowUserPointer(window));
 		bool cont = true;
-		if (engine.Interface().Parser.IsProjectModified()) {
-			int btnID = engine.UI().AreYouSure();
+		if (d->engine->Interface().Parser.IsProjectModified()) {
+			int btnID = d->engine->UI().AreYouSure();
 			if (btnID == 2)
 				cont = false;
 		}
 
 		if (cont) {
-			engine.Interface().Run = false;
+			d->engine->Interface().Run = false;
 			ed::Logger::Get().Log("glfwWindowShouldClose -> quitting");
 		}
+
+		AppEvent e(AppEvent::WindowClose, window);
+		d->engine->OnEvent(e);
 	});
-	glfwSetWindowFocusCallback(wnd, [&](){
-		else if (event.window.event == SDL_WINDOWEVENT_FOCUS_LOST)
-			hasFocus = false;
-		else if (event.window.event == SDL_WINDOWEVENT_FOCUS_GAINED)
-			hasFocus = true;
+	glfwSetWindowFocusCallback(wnd, [](GLFWwindow *window, int focused){
+		auto d = reinterpret_cast<AppData*>(glfwGetWindowUserPointer(window));
+		d->hasFocus = focused;
+		AppEvent e(AppEvent::WindowFocus, window);
+		e.windowFocus.focused = focused;
+		d->engine->OnEvent(e);
 	});
-	glfwSetWindowIconifyCallback(wnd, [&](GLFWwindow* window, int iconified){
+	glfwSetWindowIconifyCallback(wnd, [](GLFWwindow* window, int iconified){
+		auto d = reinterpret_cast<AppData*>(glfwGetWindowUserPointer(window));
 		if (iconified) {
-			minimized = true;
+			d->minimized = true;
 		} else {
 			// should I restore by hand?
 		}
+		AppEvent e(AppEvent::WindowIconify, window);
+		e.windowIconify.iconified = iconified;
+		d->engine->OnEvent(e);
 	});
 	glfwSetWindowSizeCallback(wnd, [](GLFWwindow* window, int width, int height){
-		maximized = glfwGetWindowAttrib(window, GLFW_MAXIMIZED);
-		fullscreen = false;
-		minimized = glfwGetWindowAttrib(window, GLFW_ICONIFIED);
+		auto d = reinterpret_cast<AppData*>(glfwGetWindowUserPointer(window));
+		d->maximized = glfwGetWindowAttrib(window, GLFW_MAXIMIZED);
+		d->fullscreen = false;
+		d->minimized = glfwGetWindowAttrib(window, GLFW_ICONIFIED);
 
 		// cache window size and position
-		if (!maximized) {
+		if (!d->maximized) {
 			int tempX = 0, tempY = 0;
-			glfwGetWindowPos(wnd, &tempX, &tempY);
-			wndPosX = tempX;
-			wndPosY = tempY;
-			glfwGetWindowSize(wnd, &tempX, &tempY);
-			wndWidth = tempX;
-			wndHeight = tempY;
+			glfwGetWindowPos(window, &tempX, &tempY);
+			d->wndPosX = tempX;
+			d->wndPosY = tempY;
+			glfwGetWindowSize(window, &tempX, &tempY);
+			d->wndWidth = tempX;
+			d->wndHeight = tempY;
 		}
+		AppEvent e(AppEvent::WindowSize, window);
+		e.windowSize.width = width;
+		e.windowSize.height = height;
+		d->engine->OnEvent(e);
 	});
-
+	glfwSetKeyCallback(wnd, [](GLFWwindow* window, int key, int scancode, int action, int mods){
+		auto d = reinterpret_cast<AppData*>(glfwGetWindowUserPointer(window));
+		AppEvent e(AppEvent::KeyPress, window);
+		e.keyPress.key = key;
+		e.keyPress.scancode = scancode;
+		e.keyPress.action = action;
+		e.keyPress.mods = mods;
+		d->engine->OnEvent(e);
+	});
+	glfwSetCursorPosCallback(wnd, [](GLFWwindow* window, double xpos, double ypos){
+		auto d = reinterpret_cast<AppData*>(glfwGetWindowUserPointer(window));
+		AppEvent e(AppEvent::CursorPos, window);
+		e.cursorPos.xpos = xpos;
+		e.cursorPos.ypos = ypos;
+		d->engine->OnEvent(e);
+	});
+	glfwSetMouseButtonCallback(wnd, [](GLFWwindow* window, int button, int action, int mods){
+		auto d = reinterpret_cast<AppData*>(glfwGetWindowUserPointer(window));
+		AppEvent e(AppEvent::MouseButton, window);
+		e.mouseButton.button = button;
+		e.mouseButton.action = action;
+		e.mouseButton.mods = mods;
+		d->engine->OnEvent(e);
+	});
+	glfwSetScrollCallback(wnd, [](GLFWwindow* window, double xoffset, double yoffset){
+		auto d = reinterpret_cast<AppData*>(glfwGetWindowUserPointer(window));
+		AppEvent e(AppEvent::Scroll, window);
+		e.scroll.xoffset = xoffset;
+		e.scroll.yoffset = yoffset;
+		d->engine->OnEvent(e);
+	});
+	glfwSetCharCallback(wnd, [](GLFWwindow* window, unsigned int c){
+		auto d = reinterpret_cast<AppData*>(glfwGetWindowUserPointer(window));
+		AppEvent e(AppEvent::CharInput, window);
+		e.charInput.c = c;
+		d->engine->OnEvent(e);
+	});
 
 	while (engine.Interface().Run) {
 		glfwPollEvents();
 #if defined(_WIN32)
-		else if (event.type == SDL_SYSWMEVENT) {
-			// this doesn't work - it seems that SDL doesn't forward WM_DPICHANGED message
-			if (event.syswm.type == WM_DPICHANGED && ed::Settings::Instance().General.AutoScale) {
-				float dpi = 0.0f;
-				int wndDisplayIndex = SDL_GetWindowDisplayIndex(wnd);
-				SDL_GetDisplayDPI(wndDisplayIndex, &dpi, NULL, NULL);
+		// else if (event.type == SDL_SYSWMEVENT) {
+		// 	// this doesn't work - it seems that SDL doesn't forward WM_DPICHANGED message
+		// 	if (event.syswm.type == WM_DPICHANGED && ed::Settings::Instance().General.AutoScale) {
+		// 		float dpi = 0.0f;
+		// 		int wndDisplayIndex = SDL_GetWindowDisplayIndex(wnd);
+		// 		SDL_GetDisplayDPI(wndDisplayIndex, &dpi, NULL, NULL);
 
-				if (dpi <= 0.0f) dpi = 1.0f;
+		// 		if (dpi <= 0.0f) dpi = 1.0f;
 
-				ed::Settings::Instance().TempScale = dpi / 96.0f;
-				ed::Logger::Get().Log("Updating DPI to " + std::to_string(dpi / 96.0f));
-			}
-		}
+		// 		ed::Settings::Instance().TempScale = dpi / 96.0f;
+		// 		ed::Logger::Get().Log("Updating DPI to " + std::to_string(dpi / 96.0f));
+		// 	}
+		// }
 #endif
-		engine.OnEvent(event);
-
 		if (!engine.Interface().Run) break;
 
 		float delta = timer.Restart();

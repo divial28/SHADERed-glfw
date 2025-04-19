@@ -3,8 +3,8 @@
 #include <SHADERed/Objects/SystemVariableManager.h>
 
 namespace ed {
-	EditorEngine::EditorEngine(SDL_Window* wnd, SDL_GLContext* gl)
-			: m_ui(&m_interface, wnd, gl)
+	EditorEngine::EditorEngine(GLFWwindow* wnd)
+			: m_ui(&m_interface, wnd)
 			, m_interface(&m_ui)
 	{
 	}
@@ -15,11 +15,13 @@ namespace ed {
 		// load template
 		m_interface.Pipeline.New();
 	}
-	void EditorEngine::OnEvent(const SDL_Event& e)
+
+	void EditorEngine::OnEvent(const AppEvent& e)
 	{
 		m_ui.OnEvent(e);
 		m_interface.OnEvent(e);
 	}
+
 	void EditorEngine::Update(float delta)
 	{
 		// first update system time delta value

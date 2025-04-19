@@ -1,16 +1,17 @@
 #pragma once
+#include <SHADERed/AppEvent.h>
 #include <SHADERed/GUIManager.h>
 #include <SHADERed/InterfaceManager.h>
 
-#include <SDL2/SDL_events.h>
-#include <SDL2/SDL_video.h>
+struct GLFWwindow;
 
 namespace ed {
 	class EditorEngine {
 	public:
-		EditorEngine(SDL_Window* wnd, SDL_GLContext* gl);
+		EditorEngine(GLFWwindow* wnd);
 
-		void OnEvent(const SDL_Event& e);
+		void OnEvent(const AppEvent& e);
+
 		void Update(float delta);
 		void Render();
 

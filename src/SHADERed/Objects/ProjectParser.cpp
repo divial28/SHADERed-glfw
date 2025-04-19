@@ -112,7 +112,7 @@ namespace ed {
 				};
 				const SDL_MessageBoxData messageboxdata = {
 					SDL_MESSAGEBOX_INFORMATION, /* .flags */
-					m_ui->GetSDLWindow(),		/* .window */
+					m_ui->GetGLFWWindow(),		/* .window */
 					"SHADERed",					/* .title */
 					msg.c_str(),				/* .message */
 					SDL_arraysize(buttons),		/* .numbuttons */
@@ -139,7 +139,7 @@ namespace ed {
 						};
 						const SDL_MessageBoxData messageboxdata = {
 							SDL_MESSAGEBOX_INFORMATION, /* .flags */
-							m_ui->GetSDLWindow(),		/* .window */
+							m_ui->GetGLFWWindow(),		/* .window */
 							"SHADERed",					/* .title */
 							msg.c_str(),				/* .message */
 							SDL_arraysize(buttons),		/* .numbuttons */

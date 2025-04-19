@@ -1,4 +1,5 @@
 #pragma once
+#include <SHADERed/AppEvent.h>
 #include <SHADERed/Objects/KeyboardShortcuts.h>
 #include <SHADERed/Objects/ShaderVariableContainer.h>
 #include <SHADERed/Objects/CommandLineOptionParser.h>
@@ -8,14 +9,13 @@
 #include <ImGuiColorTextEdit/TextEditor.h>
 #include <SHADERed/Engine/Timer.h>
 
-#include <SDL2/SDL_events.h>
-#include <SDL2/SDL_video.h>
 #include <glm/glm.hpp>
 #include <map>
 #include <string>
 #include <vector>
 
 class ImFont;
+struct GLFWwindow;
 
 namespace ed {
 	class InterfaceManager;
@@ -49,17 +49,18 @@ namespace ed {
 
 	class GUIManager {
 	public:
-		GUIManager(ed::InterfaceManager* objs, SDL_Window* wnd, SDL_GLContext* gl);
+		GUIManager(ed::InterfaceManager* objs, GLFWwindow* wnd);
 		~GUIManager();
 
-		void OnEvent(const SDL_Event& e);
+		void OnEvent(const AppEvent& e);
+
 		void Update(float delta);
 		void Render();
 
 		void Destroy();
 
 		UIView* Get(ViewID view);
-		inline SDL_Window* GetSDLWindow() { return m_wnd; }
+		inline GLFWwindow* GetGLFWWindow() { return m_wnd; }
 
 		void ResetWorkspace();
 		void SaveSettings();
@@ -223,7 +224,6 @@ namespace ed {
 		TextEditor m_kbInfo;
 
 		InterfaceManager* m_data;
-		SDL_Window* m_wnd;
-		SDL_GLContext* m_gl;
+		GLFWwindow* m_wnd;
 	};
 }

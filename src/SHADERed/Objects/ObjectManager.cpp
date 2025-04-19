@@ -8,6 +8,8 @@
 #include <unordered_map>
 #include <fstream>
 
+#include <GLFW/glfw3.h>
+
 #define STB_IMAGE_IMPLEMENTATION
 #include <misc/stb_image.h>
 #include <misc/stb_image_write.h>
@@ -25,103 +27,103 @@ namespace ed {
 		memset(m_kbTexture, 0, sizeof(unsigned char) * 256 * 3);
 		
 		m_keyIDs = {
-			{ SDLK_BACKSPACE, 8 },
-			{ SDLK_TAB, 9 },
-			{ SDLK_RETURN, 13 },
+			{ GLFW_KEY_BACKSPACE, 8 },
+			{ GLFW_KEY_TAB, 9 },
+			{ GLFW_KEY_ENTER, 13 },
 			// { SHIFT, 16 },
 			// { CTRL, 17 },
 			// { ALT, 18 },
-			{ SDLK_PAUSE, 19 },
-			{ SDLK_CAPSLOCK, 20 },
-			{ SDLK_ESCAPE, 27 },
-			{ SDLK_PAGEUP, 33 },
-			{ SDLK_SPACE, 32 },
-			{ SDLK_PAGEDOWN, 34 },
-			{ SDLK_END, 35 },
-			{ SDLK_HOME, 36 },
-			{ SDLK_LEFT, 37 },
-			{ SDLK_UP, 38 },
-			{ SDLK_RIGHT, 39 },
-			{ SDLK_DOWN, 40 },
-			{ SDLK_PRINTSCREEN, 44 },
-			{ SDLK_INSERT, 45 },
-			{ SDLK_DELETE, 46 },
-			{ SDLK_0, 48 },
-			{ SDLK_1, 49 },
-			{ SDLK_2, 50 },
-			{ SDLK_3, 51 },
-			{ SDLK_4, 52 },
-			{ SDLK_5, 53 },
-			{ SDLK_6, 54 },
-			{ SDLK_7, 55 },
-			{ SDLK_8, 56 },
-			{ SDLK_9, 57 },
-			{ SDLK_a, 65 },
-			{ SDLK_b, 66 },
-			{ SDLK_c, 67 },
-			{ SDLK_d, 68 },
-			{ SDLK_e, 69 },
-			{ SDLK_f, 70 },
-			{ SDLK_g, 71 },
-			{ SDLK_h, 72 },
-			{ SDLK_i, 73 },
-			{ SDLK_j, 74 },
-			{ SDLK_k, 75 },
-			{ SDLK_l, 76 },
-			{ SDLK_m, 77 },
-			{ SDLK_n, 78 },
-			{ SDLK_o, 79 },
-			{ SDLK_p, 80 },
-			{ SDLK_q, 81 },
-			{ SDLK_r, 82 },
-			{ SDLK_s, 83 },
-			{ SDLK_t, 84 },
-			{ SDLK_u, 85 },
-			{ SDLK_v, 86 },
-			{ SDLK_w, 87 },
-			{ SDLK_x, 88 },
-			{ SDLK_y, 89 },
-			{ SDLK_z, 90 },
-			{ SDLK_SELECT, 93 },
-			{ SDLK_KP_0, 96 },
-			{ SDLK_KP_1, 97 },
-			{ SDLK_KP_2, 98 },
-			{ SDLK_KP_3, 99 },
-			{ SDLK_KP_4, 100 },
-			{ SDLK_KP_5, 101 },
-			{ SDLK_KP_6, 102 },
-			{ SDLK_KP_7, 103 },
-			{ SDLK_KP_8, 104 },
-			{ SDLK_KP_9, 105 },
-			{ SDLK_KP_MULTIPLY, 106 },
-			{ SDLK_KP_PLUS, 107 },
-			{ SDLK_KP_MINUS, 109 },
-			{ SDLK_KP_DECIMAL, 110 },
-			{ SDLK_KP_DIVIDE, 111 },
-			{ SDLK_F1, 112 },
-			{ SDLK_F2, 113 },
-			{ SDLK_F3, 114 },
-			{ SDLK_F4, 115 },
-			{ SDLK_F5, 116 },
-			{ SDLK_F6, 117 },
-			{ SDLK_F7, 118 },
-			{ SDLK_F8, 119 },
-			{ SDLK_F9, 120 },
-			{ SDLK_F10, 121 },
-			{ SDLK_F11, 122 },
-			{ SDLK_F12, 123 },
-			{ SDLK_NUMLOCKCLEAR, 144 },
-			{ SDLK_SCROLLLOCK, 145 },
-			{ SDLK_SEMICOLON, 186 },
-			{ SDLK_EQUALS, 187 },
-			{ SDLK_COMMA, 188 },
-			{ SDLK_MINUS, 189 },
-			{ SDLK_PERIOD, 190 },
-			{ SDLK_SLASH, 191 },
-			{ SDLK_LEFTBRACKET, 219 },
-			{ SDLK_BACKSLASH, 220 },
-			{ SDLK_RIGHTBRACKET, 221 },
-			{ SDLK_QUOTE, 222 },
+			{ GLFW_KEY_PAUSE, 19 },
+			{ GLFW_KEY_CAPS_LOCK, 20 },
+			{ GLFW_KEY_ESCAPE, 27 },
+			{ GLFW_KEY_PAGE_UP, 33 },
+			{ GLFW_KEY_SPACE, 32 },
+			{ GLFW_KEY_PAGE_DOWN, 34 },
+			{ GLFW_KEY_END, 35 },
+			{ GLFW_KEY_HOME, 36 },
+			{ GLFW_KEY_LEFT, 37 },
+			{ GLFW_KEY_UP, 38 },
+			{ GLFW_KEY_RIGHT, 39 },
+			{ GLFW_KEY_DOWN, 40 },
+			{ GLFW_KEY_PRINT_SCREEN, 44 },
+			{ GLFW_KEY_INSERT, 45 },
+			{ GLFW_KEY_DELETE, 46 },
+			{ GLFW_KEY_0, 48 },
+			{ GLFW_KEY_1, 49 },
+			{ GLFW_KEY_2, 50 },
+			{ GLFW_KEY_3, 51 },
+			{ GLFW_KEY_4, 52 },
+			{ GLFW_KEY_5, 53 },
+			{ GLFW_KEY_6, 54 },
+			{ GLFW_KEY_7, 55 },
+			{ GLFW_KEY_8, 56 },
+			{ GLFW_KEY_9, 57 },
+			{ GLFW_KEY_A, 65 },
+			{ GLFW_KEY_B, 66 },
+			{ GLFW_KEY_C, 67 },
+			{ GLFW_KEY_D, 68 },
+			{ GLFW_KEY_E, 69 },
+			{ GLFW_KEY_F, 70 },
+			{ GLFW_KEY_G, 71 },
+			{ GLFW_KEY_H, 72 },
+			{ GLFW_KEY_I, 73 },
+			{ GLFW_KEY_J, 74 },
+			{ GLFW_KEY_K, 75 },
+			{ GLFW_KEY_L, 76 },
+			{ GLFW_KEY_M, 77 },
+			{ GLFW_KEY_N, 78 },
+			{ GLFW_KEY_O, 79 },
+			{ GLFW_KEY_P, 80 },
+			{ GLFW_KEY_Q, 81 },
+			{ GLFW_KEY_R, 82 },
+			{ GLFW_KEY_S, 83 },
+			{ GLFW_KEY_T, 84 },
+			{ GLFW_KEY_U, 85 },
+			{ GLFW_KEY_V, 86 },
+			{ GLFW_KEY_W, 87 },
+			{ GLFW_KEY_X, 88 },
+			{ GLFW_KEY_Y, 89 },
+			{ GLFW_KEY_Z, 90 },
+			{ GLFW_KEY_GRAVE_ACCENT, 93 },
+			{ GLFW_KEY_KP_0, 96 },
+			{ GLFW_KEY_KP_1, 97 },
+			{ GLFW_KEY_KP_2, 98 },
+			{ GLFW_KEY_KP_3, 99 },
+			{ GLFW_KEY_KP_4, 100 },
+			{ GLFW_KEY_KP_5, 101 },
+			{ GLFW_KEY_KP_6, 102 },
+			{ GLFW_KEY_KP_7, 103 },
+			{ GLFW_KEY_KP_8, 104 },
+			{ GLFW_KEY_KP_9, 105 },
+			{ GLFW_KEY_KP_MULTIPLY, 106 },
+			{ GLFW_KEY_KP_ADD, 107 },
+			{ GLFW_KEY_KP_SUBTRACT, 109 },
+			{ GLFW_KEY_KP_DECIMAL, 110 },
+			{ GLFW_KEY_KP_DIVIDE, 111 },
+			{ GLFW_KEY_F1, 112 },
+			{ GLFW_KEY_F2, 113 },
+			{ GLFW_KEY_F3, 114 },
+			{ GLFW_KEY_F4, 115 },
+			{ GLFW_KEY_F5, 116 },
+			{ GLFW_KEY_F6, 117 },
+			{ GLFW_KEY_F7, 118 },
+			{ GLFW_KEY_F8, 119 },
+			{ GLFW_KEY_F9, 120 },
+			{ GLFW_KEY_F10, 121 },
+			{ GLFW_KEY_F11, 122 },
+			{ GLFW_KEY_F12, 123 },
+			{ GLFW_KEY_NUM_LOCK, 144 },
+			{ GLFW_KEY_SCROLL_LOCK, 145 },
+			{ GLFW_KEY_SEMICOLON, 186 },
+			{ GLFW_KEY_EQUAL, 187 },
+			{ GLFW_KEY_COMMA, 188 },
+			{ GLFW_KEY_MINUS, 189 },
+			{ GLFW_KEY_PERIOD, 190 },
+			{ GLFW_KEY_SLASH, 191 },
+			{ GLFW_KEY_LEFT_BRACKET, 219 },
+			{ GLFW_KEY_BACKSLASH, 220 },
+			{ GLFW_KEY_RIGHT_BRACKET, 221 },
+			{ GLFW_KEY_APOSTROPHE, 222 },
 			//{ LEFT MOUSE CLICK, 245 },
 			//{ MIDDLE MOUSE CLICK, 246 },
 			//{ RIGHT MOUSE CLICK, 247 },
@@ -881,18 +883,19 @@ namespace ed {
 				it->Sound->Start();
 		}
 	}
-	void ObjectManager::OnEvent(const SDL_Event& e)
+	void ObjectManager::OnEvent(const AppEvent& e)
 	{
-		if (e.type == SDL_KEYDOWN) {
+		if (e.type == AppEvent::KeyPress && e.keyPress.action == GLFW_PRESS) {
+			const auto& k = e.keyPress;
 			int keyCode = 0;
-			if (e.key.keysym.sym == SDLK_LSHIFT || e.key.keysym.sym == SDLK_RSHIFT)
+			if (k.mods | GLFW_MOD_SHIFT)
 				keyCode = 16;
-			else if (e.key.keysym.sym == SDLK_LCTRL || e.key.keysym.sym == SDLK_RCTRL)
+			else if (k.mods | GLFW_MOD_CONTROL)
 				keyCode = 17;
-			else if (e.key.keysym.sym == SDLK_LALT || e.key.keysym.sym == SDLK_RALT)
+			else if (k.mods | GLFW_MOD_ALT)
 				keyCode = 18;
-			else if (m_keyIDs.count(e.key.keysym.sym))
-				keyCode = m_keyIDs[e.key.keysym.sym];
+			else if (m_keyIDs.count(k.key))
+				keyCode = m_keyIDs[k.key];
 
 			if (keyCode > 0) {
 				m_kbTexture[keyCode] = 0xFF;
@@ -900,57 +903,61 @@ namespace ed {
 				m_kbTexture[512 + keyCode] = ~m_kbTexture[512 + keyCode];
 			}
 		} 
-		else if (e.type == SDL_KEYUP) {
+		else if (e.type == AppEvent::KeyPress && e.keyPress.action == GLFW_RELEASE) {
+			const auto& k = e.keyPress;
 			int keyCode = -1;
-			if (e.key.keysym.sym == SDLK_LSHIFT || e.key.keysym.sym == SDLK_RSHIFT)
+			if (k.mods | GLFW_MOD_SHIFT)
 				keyCode = 16;
-			else if (e.key.keysym.sym == SDLK_LCTRL || e.key.keysym.sym == SDLK_RCTRL)
+			else if (k.mods | GLFW_MOD_CONTROL)
 				keyCode = 17;
-			else if (e.key.keysym.sym == SDLK_LALT || e.key.keysym.sym == SDLK_RALT)
+			else if (k.mods | GLFW_MOD_ALT)
 				keyCode = 18;
-			else if (m_keyIDs.count(e.key.keysym.sym))
-				keyCode = m_keyIDs[e.key.keysym.sym];
+			else if (m_keyIDs.count(k.key))
+				keyCode = m_keyIDs[k.key];
 
 			if (keyCode > 0)
 				m_kbTexture[keyCode] = 0;
-		} else if (e.type == SDL_MOUSEBUTTONDOWN) {
+		} else if (e.type == AppEvent::MouseButton) {
+			auto& m = e.mouseButton;
 			int keyCode = -1;
-			if (e.button.button == SDL_BUTTON_LEFT)
-				keyCode = 245;
-			else if (e.button.button == SDL_BUTTON_MIDDLE)
-				keyCode = 246;
-			else if (e.button.button == SDL_BUTTON_RIGHT)
-				keyCode = 247;
+			if (m.action == GLFW_PRESS) {
+				if (m.button == GLFW_MOUSE_BUTTON_LEFT)
+					keyCode = 245;
+				else if (m.button == GLFW_MOUSE_BUTTON_MIDDLE)
+					keyCode = 246;
+				else if (m.button == GLFW_MOUSE_BUTTON_RIGHT)
+					keyCode = 247;
 
-			if (keyCode > 0) {
-				m_kbTexture[keyCode] = 0xFF;
-				m_kbTexture[256 + keyCode] = 0xFF;
-				m_kbTexture[512 + keyCode] = ~m_kbTexture[512 + keyCode];
+				if (keyCode > 0) {
+					m_kbTexture[keyCode] = 0xFF;
+					m_kbTexture[256 + keyCode] = 0xFF;
+					m_kbTexture[512 + keyCode] = ~m_kbTexture[512 + keyCode];
+				}
+			} else if (m.action == GLFW_RELEASE) {
+				if (m.button == GLFW_MOUSE_BUTTON_LEFT)
+					keyCode = 245;
+				else if (m.button == GLFW_MOUSE_BUTTON_MIDDLE)
+					keyCode = 246;
+				else if (m.button == GLFW_MOUSE_BUTTON_RIGHT)
+					keyCode = 247;
+
+				if (keyCode > 0)
+					m_kbTexture[keyCode] = 0;
 			}
-		} else if (e.type == SDL_MOUSEBUTTONUP) {
+		} else if (e.type == AppEvent::Scroll) {
+			auto& s = e.scroll;
 			int keyCode = -1;
-			if (e.button.button == SDL_BUTTON_LEFT)
-				keyCode = 245;
-			else if (e.button.button == SDL_BUTTON_MIDDLE)
-				keyCode = 246;
-			else if (e.button.button == SDL_BUTTON_RIGHT)
-				keyCode = 247;
-
-			if (keyCode > 0)
-				m_kbTexture[keyCode] = 0;
-		} else if (e.type == SDL_MOUSEWHEEL) {
-			int keyCode = -1;
-			if (e.wheel.y > 0)
+			if (s.yoffset > 0)
 				keyCode = 250;
-			else if (e.wheel.y < 0)
+			else if (s.yoffset < 0)
 				keyCode = 251;
 
 			if (keyCode > 0) {
 				m_kbTexture[256 + keyCode] = 0xFF;
-				if (e.wheel.y > 0) {
+				if (s.yoffset > 0) {
 					m_kbTexture[512 + keyCode]++;
 					m_kbTexture[512 + keyCode + 1]++;
-				} else if (e.wheel.y < 0) {
+				} else if (s.yoffset < 0) {
 					m_kbTexture[512 + keyCode]--;
 					m_kbTexture[512 + keyCode - 1]--;
 				}

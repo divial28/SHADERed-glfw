@@ -8,7 +8,7 @@
 #include <filesystem>
 
 #include <ImGuiColorTextEdit/TextEditor.h>
-#include <SDL2/SDL_keyboard.h>
+#include <GLFW/glfw3.h>
 
 namespace ed {
 	std::string getShortcutsFilePath()
@@ -56,9 +56,13 @@ namespace ed {
 					break;
 				else {
 					if (vk1 == -1)
-						vk1 = SDL_GetKeyFromName(token.c_str());
+						// FIXME: not implemented in glfw
+						// vk1 = SDL_GetKeyFromName(token.c_str());
+						vk1 = GLFW_KEY_UNKNOWN;
 					else if (m_data[name].Key2 == -1)
-						vk2 = SDL_GetKeyFromName(token.c_str());
+						// FIXME: not implemented in glfw
+						// vk2 = SDL_GetKeyFromName(token.c_str());
+						vk2 = GLFW_KEY_UNKNOWN;
 				}
 			}
 
@@ -88,9 +92,9 @@ namespace ed {
 				file << " ALT";
 			if (s.second.Shift)
 				file << " SHIFT";
-			file << " " << SDL_GetKeyName(s.second.Key1);
+			file << " " << glfwGetKeyName(GLFW_KEY_UNKNOWN, s.second.Key1);
 			if (s.second.Key2 != -1)
-				file << " " << SDL_GetKeyName(s.second.Key2);
+				file << " " << glfwGetKeyName(GLFW_KEY_UNKNOWN, s.second.Key2);
 
 			file << std::endl;
 		}
@@ -151,9 +155,9 @@ namespace ed {
 			ret += "ALT+";
 		if (m_data[name].Shift)
 			ret += "SHIFT+";
-		ret += std::string(SDL_GetKeyName(m_data[name].Key1)) + "+";
+		ret += std::string(glfwGetKeyName(GLFW_KEY_UNKNOWN, m_data[name].Key1)) + "+";
 		if (m_data[name].Key2 != -1)
-			ret += std::string(SDL_GetKeyName(m_data[name].Key2)) + "+";
+			ret += std::string(glfwGetKeyName(GLFW_KEY_UNKNOWN, m_data[name].Key2)) + "+";
 
 		return ret.substr(0, ret.size() - 1);
 	}
@@ -164,18 +168,22 @@ namespace ed {
 			ret.push_back(i.first);
 		return ret;
 	}
-	void KeyboardShortcuts::Check(const SDL_Event& e, bool codeHasFocus)
+	void KeyboardShortcuts::Check(const AppEvent& e, bool codeHasFocus)
 	{
+		if (e.type != AppEvent::KeyPress)
+			return;
+
+		auto& k = e.keyPress;
 		// dont process key repeats
-		if (e.key.repeat != 0)
+		if (k.action == GLFW_REPEAT)
 			return;
 
 		m_keys[0] = m_keys[1];
-		m_keys[1] = e.key.keysym.sym;
+		m_keys[1] = k.key;
 
-		bool alt = e.key.keysym.mod & KMOD_ALT;
-		bool ctrl = e.key.keysym.mod & KMOD_CTRL;
-		bool shift = e.key.keysym.mod & KMOD_SHIFT;
+		bool alt = k.mods & GLFW_MOD_ALT;
+		bool ctrl = k.mods & GLFW_MOD_CONTROL;
+		bool shift = k.mods & GLFW_MOD_SHIFT;
 
 		bool resetSecond = false, resetFirst = false;
 
@@ -231,7 +239,7 @@ namespace ed {
 	}
 	bool KeyboardShortcuts::m_canSolo(const std::string& name, int k)
 	{
-		bool isEditorSpecial = (name.find("Editor") != std::string::npos) && !((k >= SDLK_0 && k <= SDLK_9) || (k >= SDLK_a && k <= SDLK_z)); // the key can go solo if it's a "special" key
-		return (k >= SDLK_F1 && k <= SDLK_F12) || (k >= SDLK_F13 && k <= SDLK_F24) || isEditorSpecial || (name.find("Editor") == std::string::npos);
+		bool isEditorSpecial = (name.find("Editor") != std::string::npos) && !((k >= GLFW_KEY_0 && k <= GLFW_KEY_9) || (k >= GLFW_KEY_A && k <= GLFW_KEY_Z)); // the key can go solo if it's a "special" key
+		return (k >= GLFW_KEY_F1 && k <= GLFW_KEY_F12) || (k >= GLFW_KEY_F13 && k <= GLFW_KEY_F24) || isEditorSpecial || (name.find("Editor") == std::string::npos);
 	}
 }

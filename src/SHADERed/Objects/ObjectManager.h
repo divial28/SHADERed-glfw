@@ -1,10 +1,10 @@
 #pragma once
-#include <SDL2/SDL_surface.h>
 #include <string>
 #include <unordered_map>
 #include <utility>
 #include <vector>
 
+#include <SHADERed/AppEvent.h>
 #include <SHADERed/Objects/AudioAnalyzer.h>
 #include <SHADERed/Objects/PipelineItem.h>
 #include <SHADERed/Objects/ProjectParser.h>
@@ -29,7 +29,7 @@ namespace ed {
 		bool CreatePluginItem(const std::string& name, const std::string& objtype, void* data, GLuint id, IPlugin1* owner);
 		bool CreateKeyboardTexture(const std::string& name);
 		
-		void OnEvent(const SDL_Event& e);
+		void OnEvent(const AppEvent& e);
 		void Update(float delta);
 
 		void Pause(bool pause);
@@ -95,7 +95,7 @@ namespace ed {
 
 		std::vector<ObjectManagerItem*> m_items;
 
-		std::unordered_map<SDL_Keycode, int> m_keyIDs;
+		std::unordered_map<int, int> m_keyIDs;
 
 		inline GLuint m_getGLObject(ObjectManagerItem* item)
 		{
