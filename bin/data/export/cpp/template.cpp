@@ -3,7 +3,7 @@
 #include <string>
 
 #include <GL/glew.h>
-#include <SDL2/SDL.h>
+#include <GLFW/glfw3.h>
 #if defined(__APPLE__)
 #include <OpenGL/gl.h>
 #else
@@ -37,24 +37,26 @@ int main()
 {
 	stbi_set_flip_vertically_on_load(1);
 
-	// init sdl2
-	if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_TIMER | SDL_INIT_AUDIO) < 0) {
-		printf("Failed to initialize SDL2\n");
+	if (!glfwInit()) {
+		printf("Failed to initialize glfw\n");
 		return 0;
 	}
 
-	SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);
-	SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 3);
-	SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 3);
-	SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1); // double buffering
+	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
+	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
+	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+	glfwWindowHint(GLFW_DOUBLEBUFFER, GLFW_TRUE);
 
 	// open window
-	SDL_Window* wnd = SDL_CreateWindow("ShaderProject", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, 800, 600, SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE | SDL_WINDOW_ALLOW_HIGHDPI);
-	SDL_SetWindowMinimumSize(wnd, 200, 200);
+	GLFWwindow* wnd = glfwCreateWindow(800, 600, "ShaderProject", NULL, NULL);
+	if (!wnd) {
+		glfwTerminate();
+		return -1; // Handle error
+	}
+	glfwSetWindowSizeLimits(wnd, 200, 200, GLFW_DONT_CARE, GLFW_DONT_CARE);
 
 	// get GL context
-	SDL_GLContext glContext = SDL_GL_CreateContext(wnd);
-	SDL_GL_MakeCurrent(wnd, glContext);
+	glfwMakeContextCurrent(wnd);
 	glEnable(GL_DEPTH_TEST);
 	glEnable(GL_STENCIL_TEST);
 
@@ -74,23 +76,24 @@ int main()
 	// init
 	[$$init$$]
 
-		SDL_Event event;
+		// SDL_Event event;
 	bool run = true;
-	while (run) {
-		while (SDL_PollEvent(&event)) {
-			if (event.type == SDL_QUIT) {
-				run = false;
-			} else if (event.type == SDL_MOUSEMOTION) {
-				sedMouseX = event.motion.x;
-				sedMouseY = event.motion.y;
-				sysMousePosition = glm::vec2(sedMouseX / sedWindowWidth, 1.f - (sedMouseY / sedWindowHeight));
-			} else if (event.type == SDL_WINDOWEVENT && event.window.event == SDL_WINDOWEVENT_RESIZED) {
-				sedWindowWidth = event.window.data1;
-				sedWindowHeight = event.window.data2;
+	while (run && !glfwWindowShouldClose(wnd)) {
+		glfwPollEvents();
+		// while (SDL_PollEvent(&event)) {
+		// 	if (event.type == SDL_QUIT) {
+		// 		run = false;
+		// 	} else if (event.type == SDL_MOUSEMOTION) {
+		// 		sedMouseX = event.motion.x;
+		// 		sedMouseY = event.motion.y;
+		// 		sysMousePosition = glm::vec2(sedMouseX / sedWindowWidth, 1.f - (sedMouseY / sedWindowHeight));
+		// 	} else if (event.type == SDL_WINDOWEVENT && event.window.event == SDL_WINDOWEVENT_RESIZED) {
+		// 		sedWindowWidth = event.window.data1;
+		// 		sedWindowHeight = event.window.data2;
 
 				[$$resize_event$$]
-			}
-		}
+		// 	}
+		// }
 
 		if (!run) break;
 
@@ -108,13 +111,12 @@ int main()
 		sysTime = curTime;
 		sysFrameIndex++;
 
-		SDL_GL_SwapWindow(wnd);
+		glfwSwapBuffers(wnd);
 	}
 
 	// sdl2
-	SDL_GL_DeleteContext(glContext);
-	SDL_DestroyWindow(wnd);
-	SDL_Quit();
+	glfwDestroyWindow(wnd);
+	glfwTerminate();
 
 	return 0;
 }

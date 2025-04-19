@@ -2,7 +2,7 @@
 #include <windows.h>
 #endif
 
-#include <SDL2/SDL.h>
+#include <GLFW/glfw3.h>
 #include <SHADERed/EditorEngine.h>
 #include <SHADERed/Objects/CommandLineOptionParser.h>
 #include <SHADERed/Objects/ShaderCompiler.h>
@@ -39,7 +39,7 @@ extern "C" {
 // SDL defines main
 #undef main
 
-void SetIcon(SDL_Window* wnd);
+void SetIcon(GLFWwindow* wnd);
 void SetDpiAware();
 
 int main(int argc, char* argv[])
@@ -146,7 +146,7 @@ int main(int argc, char* argv[])
 	stbi_set_flip_vertically_on_load(1);
 
 	// init sdl2
-	if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_TIMER | SDL_INIT_AUDIO) < 0) {
+	if (!glfwInit()) {
 		ed::Logger::Get().Log("Failed to initialize SDL2", true);
 		ed::Logger::Get().Save();
 		return 0;
@@ -174,12 +174,12 @@ int main(int argc, char* argv[])
 		preload.close();
 
 		// clamp to desktop size
-		SDL_DisplayMode desk;
-		SDL_GetCurrentDisplayMode(0, &desk);
-		if (wndWidth > desk.w)
-			wndWidth = desk.w;
-		if (wndHeight > desk.h)
-			wndHeight = desk.h;
+		GLFWmonitor* primaryMonitor = glfwGetPrimaryMonitor();
+		const GLFWvidmode* mode = glfwGetVideoMode(primaryMonitor);
+		if (mode && wndWidth > mode->width)
+			wndWidth = mode->width;
+		if (mode && wndHeight > mode->height)
+			wndHeight = mode->height;
 	} else {
 		ed::Logger::Get().Log("File data/preload.dat doesnt exist", true);
 		ed::Logger::Get().Log("Deleting data/workspace.dat", true);
@@ -198,35 +198,42 @@ int main(int argc, char* argv[])
 	fullscreen = fullscreen || coptsParser.Fullscreen;
 	maximized = maximized || coptsParser.Maximized;
 
-	SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);
-	SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 3);
-	SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 3);
-	SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1); // double buffering
+	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
+	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
+	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+	glfwWindowHint(GLFW_DOUBLEBUFFER, GLFW_TRUE);
 
 	Uint32 windowFlags = SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE | SDL_WINDOW_ALLOW_HIGHDPI;
+	glfwWindowHint(GLFW_CLIENT_API, GLFW_OPENGL_API);
+	glfwWindowHint(GLFW_RESIZABLE, GLFW_TRUE);
+	// glfwWindowHint(GLFW_SCALE_TO_MONITOR, GLFW_TRUE);
+
 
 	bool run = true; // should we enter the infinite loop?
 	// make the window invisible if only rendering to a file
 	if (coptsParser.Render || coptsParser.ConvertCPP) {
-		windowFlags = SDL_WINDOW_OPENGL | SDL_WINDOW_HIDDEN;
 		maximized = false;
 		fullscreen = false;
 		run = false;
 	}
 
 	// open window
-	SDL_Window* wnd = SDL_CreateWindow("SHADERed", (wndPosX == -1) ? SDL_WINDOWPOS_CENTERED : wndPosX, (wndPosY == -1) ? SDL_WINDOWPOS_CENTERED : wndPosY, wndWidth, wndHeight, windowFlags);
+	GLFWwindow* wnd = glfwCreateWindow(wndWidth, wndHeight, "SHADERed", NULL, NULL);
+	if (!wnd) {
+		glfwTerminate();
+		return -1; // Handle error
+	}
+	glfwSetWindowPos(wnd, (wndPosX == -1) ? 100 : wndPosX, (wndPosY == -1) ? 100 : wndPosY);
 	SetDpiAware();
-	SDL_SetWindowMinimumSize(wnd, 200, 200);
+	glfwSetWindowSizeLimits(wnd, 200, 200, GLFW_DONT_CARE, GLFW_DONT_CARE);
 
 	if (maximized)
-		SDL_MaximizeWindow(wnd);
+		glfwMaximizeWindow(wnd);
 	if (fullscreen)
-		SDL_SetWindowFullscreen(wnd, SDL_WINDOW_FULLSCREEN_DESKTOP);
+		; // not implemented in glfw
 
 	// get GL context
-	SDL_GLContext glContext = SDL_GL_CreateContext(wnd);
-	SDL_GL_MakeCurrent(wnd, glContext);
+	glfwMakeContextCurrent(wnd);
 	glEnable(GL_DEPTH_TEST);
 	glEnable(GL_STENCIL_TEST);
 
@@ -283,66 +290,71 @@ int main(int argc, char* argv[])
 
 	// timer for time delta
 	ed::eng::Timer timer;
-	SDL_Event event;
 	bool minimized = false;
 	bool hasFocus = true;
-	while (engine.Interface().Run) {
-		while (SDL_PollEvent(&event)) {
-			if (event.type == SDL_QUIT) {
-				bool cont = true;
-				if (engine.Interface().Parser.IsProjectModified()) {
-					int btnID = engine.UI().AreYouSure();
-					if (btnID == 2)
-						cont = false;
-				}
 
-				if (cont) {
-					engine.Interface().Run = false;
-					ed::Logger::Get().Log("Received SDL_QUIT event -> quitting");
-				}
-			} else if (event.type == SDL_WINDOWEVENT) {
-				if (event.window.event == SDL_WINDOWEVENT_MOVED || event.window.event == SDL_WINDOWEVENT_MAXIMIZED || event.window.event == SDL_WINDOWEVENT_RESIZED) {
-					Uint32 wndFlags = SDL_GetWindowFlags(wnd);
-
-					maximized = wndFlags & SDL_WINDOW_MAXIMIZED;
-					fullscreen = wndFlags & SDL_WINDOW_FULLSCREEN_DESKTOP;
-					minimized = false;
-
-					// cache window size and position
-					if (!maximized) {
-						int tempX = 0, tempY = 0;
-						SDL_GetWindowPosition(wnd, &tempX, &tempY);
-						wndPosX = tempX;
-						wndPosY = tempY;
-
-						SDL_GetWindowSize(wnd, &tempX, &tempY);
-						wndWidth = tempX;
-						wndHeight = tempY;
-					}
-				} else if (event.window.event == SDL_WINDOWEVENT_MINIMIZED)
-					minimized = true;
-				else if (event.window.event == SDL_WINDOWEVENT_FOCUS_LOST)
-					hasFocus = false;
-				else if (event.window.event == SDL_WINDOWEVENT_FOCUS_GAINED)
-					hasFocus = true;
-			}
-#if defined(_WIN32)
-			else if (event.type == SDL_SYSWMEVENT) {
-				// this doesn't work - it seems that SDL doesn't forward WM_DPICHANGED message
-				if (event.syswm.type == WM_DPICHANGED && ed::Settings::Instance().General.AutoScale) {
-					float dpi = 0.0f;
-					int wndDisplayIndex = SDL_GetWindowDisplayIndex(wnd);
-					SDL_GetDisplayDPI(wndDisplayIndex, &dpi, NULL, NULL);
-
-					if (dpi <= 0.0f) dpi = 1.0f;
-
-					ed::Settings::Instance().TempScale = dpi / 96.0f;
-					ed::Logger::Get().Log("Updating DPI to " + std::to_string(dpi / 96.0f));
-				}
-			}
-#endif
-			engine.OnEvent(event);
+	glfwSetWindowCloseCallback(wnd, [&](GLFWwindow* window){
+		bool cont = true;
+		if (engine.Interface().Parser.IsProjectModified()) {
+			int btnID = engine.UI().AreYouSure();
+			if (btnID == 2)
+				cont = false;
 		}
+
+		if (cont) {
+			engine.Interface().Run = false;
+			ed::Logger::Get().Log("glfwWindowShouldClose -> quitting");
+		}
+	});
+	glfwSetWindowFocusCallback(wnd, [&](){
+		else if (event.window.event == SDL_WINDOWEVENT_FOCUS_LOST)
+			hasFocus = false;
+		else if (event.window.event == SDL_WINDOWEVENT_FOCUS_GAINED)
+			hasFocus = true;
+	});
+	glfwSetWindowIconifyCallback(wnd, [&](GLFWwindow* window, int iconified){
+		if (iconified) {
+			minimized = true;
+		} else {
+			// should I restore by hand?
+		}
+	});
+	glfwSetWindowSizeCallback(wnd, [](GLFWwindow* window, int width, int height){
+		maximized = glfwGetWindowAttrib(window, GLFW_MAXIMIZED);
+		fullscreen = false;
+		minimized = glfwGetWindowAttrib(window, GLFW_ICONIFIED);
+
+		// cache window size and position
+		if (!maximized) {
+			int tempX = 0, tempY = 0;
+			glfwGetWindowPos(wnd, &tempX, &tempY);
+			wndPosX = tempX;
+			wndPosY = tempY;
+			glfwGetWindowSize(wnd, &tempX, &tempY);
+			wndWidth = tempX;
+			wndHeight = tempY;
+		}
+	});
+
+
+	while (engine.Interface().Run) {
+		glfwPollEvents();
+#if defined(_WIN32)
+		else if (event.type == SDL_SYSWMEVENT) {
+			// this doesn't work - it seems that SDL doesn't forward WM_DPICHANGED message
+			if (event.syswm.type == WM_DPICHANGED && ed::Settings::Instance().General.AutoScale) {
+				float dpi = 0.0f;
+				int wndDisplayIndex = SDL_GetWindowDisplayIndex(wnd);
+				SDL_GetDisplayDPI(wndDisplayIndex, &dpi, NULL, NULL);
+
+				if (dpi <= 0.0f) dpi = 1.0f;
+
+				ed::Settings::Instance().TempScale = dpi / 96.0f;
+				ed::Logger::Get().Log("Updating DPI to " + std::to_string(dpi / 96.0f));
+			}
+		}
+#endif
+		engine.OnEvent(event);
 
 		if (!engine.Interface().Run) break;
 
@@ -354,7 +366,7 @@ int main(int argc, char* argv[])
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
 
 		engine.Render();
-		SDL_GL_SwapWindow(wnd);
+		glfwSwapBuffers(wnd);
 
 		if (minimized && delta * 1000 < 33)
 			std::this_thread::sleep_for(std::chrono::milliseconds(33 - (int)(delta * 1000)));
@@ -394,10 +406,9 @@ int main(int argc, char* argv[])
 	// close and free the memory
 	engine.Destroy();
 
-	// sdl2
-	SDL_GL_DeleteContext(glContext);
-	SDL_DestroyWindow(wnd);
-	SDL_Quit();
+	// glfw
+	glfwDestroyWindow(wnd);
+	glfwTerminate();
 
 	ed::Logger::Get().Log("Destroyed EditorEngine and SDL2");
 
@@ -406,52 +417,58 @@ int main(int argc, char* argv[])
 	return 0;
 }
 
-void SetIcon(SDL_Window* wnd)
+void SetIcon(GLFWwindow* wnd)
 {
-	float dpi = 0.0f;
-	int wndDisplayIndex = SDL_GetWindowDisplayIndex(wnd);
-	SDL_GetDisplayDPI(wndDisplayIndex, &dpi, NULL, NULL);
-	dpi /= 96.0f;
+	// GLFWimage images[2];
+	// images[0] = load_icon("my_icon.png");
+	// images[1] = load_icon("my_icon_small.png");
+	
+	// glfwSetWindowIcon(window, 2, images);
 
-	if (dpi <= 0.0f) dpi = 1.0f;
+	// float dpi = 0.0f;
+	// int wndDisplayIndex = SDL_GetWindowDisplayIndex(wnd);
+	// SDL_GetDisplayDPI(wndDisplayIndex, &dpi, NULL, NULL);
+	// dpi /= 96.0f;
 
-	stbi_set_flip_vertically_on_load(0);
+	// if (dpi <= 0.0f) dpi = 1.0f;
 
-	int req_format = STBI_rgb_alpha;
-	int width, height, orig_format;
-	unsigned char* data = stbi_load(dpi == 1.0f ? "./icon_64x64.png" : "./icon_256x256.png", &width, &height, &orig_format, req_format);
-	if (data == NULL) {
-		ed::Logger::Get().Log("Failed to set window icon", true);
-		return;
-	}
+	// stbi_set_flip_vertically_on_load(0);
 
-	int depth, pitch;
-	Uint32 pixel_format;
-	if (req_format == STBI_rgb) {
-		depth = 24;
-		pitch = 3 * width; // 3 bytes per pixel * pixels per row
-		pixel_format = SDL_PIXELFORMAT_RGB24;
-	} else { // STBI_rgb_alpha (RGBA)
-		depth = 32;
-		pitch = 4 * width;
-		pixel_format = SDL_PIXELFORMAT_RGBA32;
-	}
+	// int req_format = STBI_rgb_alpha;
+	// int width, height, orig_format;
+	// unsigned char* data = stbi_load(dpi == 1.0f ? "./icon_64x64.png" : "./icon_256x256.png", &width, &height, &orig_format, req_format);
+	// if (data == NULL) {
+	// 	ed::Logger::Get().Log("Failed to set window icon", true);
+	// 	return;
+	// }
 
-	SDL_Surface* surf = SDL_CreateRGBSurfaceWithFormatFrom((void*)data, width, height,
-		depth, pitch, pixel_format);
+	// int depth, pitch;
+	// Uint32 pixel_format;
+	// if (req_format == STBI_rgb) {
+	// 	depth = 24;
+	// 	pitch = 3 * width; // 3 bytes per pixel * pixels per row
+	// 	pixel_format = SDL_PIXELFORMAT_RGB24;
+	// } else { // STBI_rgb_alpha (RGBA)
+	// 	depth = 32;
+	// 	pitch = 4 * width;
+	// 	pixel_format = SDL_PIXELFORMAT_RGBA32;
+	// }
 
-	if (surf == NULL) {
-		ed::Logger::Get().Log("Failed to create icon SDL_Surface", true);
-		stbi_image_free(data);
-		return;
-	}
+	// SDL_Surface* surf = SDL_CreateRGBSurfaceWithFormatFrom((void*)data, width, height,
+	// 	depth, pitch, pixel_format);
 
-	SDL_SetWindowIcon(wnd, surf);
+	// if (surf == NULL) {
+	// 	ed::Logger::Get().Log("Failed to create icon SDL_Surface", true);
+	// 	stbi_image_free(data);
+	// 	return;
+	// }
 
-	SDL_FreeSurface(surf);
-	stbi_image_free(data);
+	// SDL_SetWindowIcon(wnd, surf);
 
-	stbi_set_flip_vertically_on_load(1);
+	// SDL_FreeSurface(surf);
+	// stbi_image_free(data);
+
+	// stbi_set_flip_vertically_on_load(1);
 }
 void SetDpiAware()
 {

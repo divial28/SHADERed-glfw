@@ -18,6 +18,7 @@
 #include "typeinfo.h"
 
 #include <assert.h>
+#include <cstdint>
 
 namespace dap {
 
