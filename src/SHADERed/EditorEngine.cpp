@@ -1,3 +1,4 @@
+#include <SHADERed/AppEvent.h>
 #include <SHADERed/EditorEngine.h>
 #include <SHADERed/Objects/Settings.h>
 #include <SHADERed/Objects/SystemVariableManager.h>

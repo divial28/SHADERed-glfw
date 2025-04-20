@@ -1,3 +1,4 @@
+#include <SHADERed/AppEvent.h>
 #include <SHADERed/Engine/GLUtils.h>
 #include <SHADERed/Objects/Logger.h>
 #include <SHADERed/Objects/Names.h>
@@ -27,7 +28,7 @@ namespace ed {
 		m_dialogPath = nullptr;
 		memset(m_itemName, 0, 64 * sizeof(char));
 	}
-	void PropertyUI::OnEvent(const SDL_Event& e)
+	void PropertyUI::OnEvent(const AppEvent& e)
 	{
 	}
 	void PropertyUI::Update(float delta)

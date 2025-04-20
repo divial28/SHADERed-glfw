@@ -1,3 +1,4 @@
+#include <SHADERed/AppEvent.h>
 #include <SHADERed/UI/Debug/VectorWatchUI.h>
 #include <SHADERed/UI/UIHelper.h>
 #include <SHADERed/Engine/GLUtils.h>
@@ -283,7 +284,7 @@ namespace ed {
 		for (size_t i = 0; i < exprs.size(); i++)
 			m_data->Debugger.UpdateVectorWatchValue(i);
 	}
-	void DebugVectorWatchUI::OnEvent(const SDL_Event& e)
+	void DebugVectorWatchUI::OnEvent(const AppEvent& e)
 	{
 		if (e.type == SDL_MOUSEBUTTONDOWN)
 			m_mouseContact = ImVec2(e.button.x, e.button.y);

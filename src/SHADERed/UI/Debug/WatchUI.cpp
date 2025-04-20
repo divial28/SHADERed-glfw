@@ -1,3 +1,4 @@
+#include <SHADERed/AppEvent.h>
 #include <SHADERed/UI/Debug/WatchUI.h>
 #include <SHADERed/UI/UIHelper.h>
 #include <SHADERed/Objects/Settings.h>
@@ -10,7 +11,7 @@ namespace ed {
 		for (size_t i = 0; i < exprs.size(); i++)
 			m_data->Debugger.UpdateWatchValue(i);
 	}
-	void DebugWatchUI::OnEvent(const SDL_Event& e)
+	void DebugWatchUI::OnEvent(const AppEvent& e)
 	{
 	}
 	void DebugWatchUI::Update(float delta)

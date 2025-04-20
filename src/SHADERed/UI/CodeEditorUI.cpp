@@ -1,3 +1,4 @@
+#include <SHADERed/AppEvent.h>
 #include <SHADERed/Objects/KeyboardShortcuts.h>
 #include <SHADERed/Objects/Logger.h>
 #include <SHADERed/Objects/Names.h>
@@ -223,7 +224,7 @@ namespace ed {
 		m_data->Renderer.RecompileFile(shaderFile.c_str());
 	}
 
-	void CodeEditorUI::OnEvent(const SDL_Event& e) { }
+	void CodeEditorUI::OnEvent(const AppEvent& e) { }
 	void CodeEditorUI::Update(float delta)
 	{
 		if (m_editor.size() == 0)

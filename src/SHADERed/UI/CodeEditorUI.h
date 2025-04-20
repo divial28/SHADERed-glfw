@@ -15,6 +15,8 @@
 #include <shared_mutex>
 
 namespace ed {
+	struct AppEvent;
+	
 	struct CodeSnippet {
 		std::string Language;
 		std::string Display;
@@ -45,7 +47,7 @@ namespace ed {
 		CodeEditorUI(GUIManager* ui, ed::InterfaceManager* objects, const std::string& name = "", bool visible = false);
 		~CodeEditorUI();
 
-		virtual void OnEvent(const SDL_Event& e);
+		virtual void OnEvent(const AppEvent& e);
 		virtual void Update(float delta);
 
 		void DrawTextEditor(const std::string& name, TextEditor* tEdit);

@@ -1,3 +1,4 @@
+#include <SHADERed/AppEvent.h>
 #include <SHADERed/Objects/Names.h>
 #include <SHADERed/Objects/SystemVariableManager.h>
 #include <SHADERed/Objects/Logger.h>
@@ -56,7 +57,7 @@ namespace ed {
 		m_zoomFBO.push_back(0);
 		m_lastRTSize.push_back(glm::vec2(0.0f, 0.0f));
 	}
-	void ObjectPreviewUI::OnEvent(const SDL_Event& e)
+	void ObjectPreviewUI::OnEvent(const AppEvent& e)
 	{
 		if (m_curHoveredItem != -1) {
 			if (e.type == SDL_MOUSEBUTTONDOWN) {

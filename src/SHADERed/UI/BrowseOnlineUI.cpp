@@ -1,3 +1,4 @@
+#include <SHADERed/AppEvent.h>
 #include <SHADERed/UI/BrowseOnlineUI.h>
 #include <SHADERed/UI/OptionsUI.h>
 #include <SHADERed/UI/CodeEditorUI.h>
@@ -33,7 +34,7 @@ namespace ed {
 		m_queueThumbnailID = 0;
 	}
 
-	void BrowseOnlineUI::OnEvent(const SDL_Event& e) {
+	void BrowseOnlineUI::OnEvent(const AppEvent& e) {
 		// WARNING: this method is never called
 	}
 	void BrowseOnlineUI::Update(float delta) {

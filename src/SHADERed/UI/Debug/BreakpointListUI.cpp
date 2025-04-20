@@ -1,3 +1,4 @@
+#include <SHADERed/AppEvent.h>
 #include <SHADERed/UI/Debug/BreakpointListUI.h>
 #include <ImGuiColorTextEdit/TextEditor.h>
 #include <SHADERed/UI/CodeEditorUI.h>
@@ -5,7 +6,7 @@
 #include <filesystem>
 
 namespace ed {
-	void DebugBreakpointListUI::OnEvent(const SDL_Event& e)
+	void DebugBreakpointListUI::OnEvent(const AppEvent& e)
 	{
 	}
 	void DebugBreakpointListUI::Update(float delta)

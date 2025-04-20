@@ -1,3 +1,4 @@
+#include <SHADERed/AppEvent.h>
 #include <SHADERed/UI/Debug/ImmediateUI.h>
 #include <SHADERed/UI/UIHelper.h>
 #include <imgui/imgui.h>
@@ -56,7 +57,7 @@ namespace ed {
 				m_colorPreview.push_back(color);
 			}
 	}
-	void DebugImmediateUI::OnEvent(const SDL_Event& e)
+	void DebugImmediateUI::OnEvent(const AppEvent& e)
 	{
 	}
 	void DebugImmediateUI::Update(float delta)

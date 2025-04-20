@@ -1,5 +1,7 @@
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
+
+#include <SHADERed/AppEvent.h>
 #include <SHADERed/GUIManager.h>
 #include <SHADERed/InterfaceManager.h>
 #include <SHADERed/Objects/CameraSnapshots.h>
@@ -802,7 +804,7 @@ namespace ed {
 
 				ImGui::Separator();
 				if (ImGui::MenuItem("Exit", KeyboardShortcuts::Instance().GetString("Window.Exit").c_str())) {
-					SDL_Event event;
+					AppEvent event;
 					event.type = SDL_QUIT;
 					SDL_PushEvent(&event);
 					return;

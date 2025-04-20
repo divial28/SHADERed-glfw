@@ -1,3 +1,4 @@
+#include <SHADERed/AppEvent.h>
 #include <SHADERed/GUIManager.h>
 #include <SHADERed/InterfaceManager.h>
 #include <SHADERed/Objects/Names.h>

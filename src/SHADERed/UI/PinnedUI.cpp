@@ -1,3 +1,4 @@
+#include <SHADERed/AppEvent.h>
 #include <SHADERed/UI/CodeEditorUI.h>
 #include <SHADERed/UI/PinnedUI.h>
 #include <imgui/imgui.h>
@@ -5,7 +6,7 @@
 #include <SHADERed/Objects/Logger.h>
 
 namespace ed {
-	void PinnedUI::OnEvent(const SDL_Event& e)
+	void PinnedUI::OnEvent(const AppEvent& e)
 	{
 	}
 	void PinnedUI::Update(float delta)

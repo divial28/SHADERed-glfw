@@ -4,11 +4,13 @@
 #include <SHADERed/UI/UIView.h>
 
 namespace ed {
+	struct AppEvent;
+	
 	class CreateItemUI : public UIView {
 	public:
 		CreateItemUI(GUIManager* ui, InterfaceManager* objects, const std::string& name = "", bool visible = false);
 
-		virtual void OnEvent(const SDL_Event& e);
+		virtual void OnEvent(const AppEvent& e);
 		virtual void Update(float delta);
 
 		void SetOwner(const char* shaderPass);

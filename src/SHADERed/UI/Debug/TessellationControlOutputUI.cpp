@@ -1,3 +1,4 @@
+#include <SHADERed/AppEvent.h>
 #include <SHADERed/UI/Debug/TessellationControlOutputUI.h>
 #include <SHADERed/Objects/DefaultState.h>
 #include <SHADERed/Objects/Logger.h>
@@ -48,7 +49,7 @@ namespace ed {
 		glDeleteVertexArrays(1, &m_triangleVAO);
 		glDeleteShader(m_shader);
 	}
-	void DebugTessControlOutputUI::OnEvent(const SDL_Event& e)
+	void DebugTessControlOutputUI::OnEvent(const AppEvent& e)
 	{
 	}
 	void DebugTessControlOutputUI::Update(float delta)

@@ -3,12 +3,14 @@
 #include <SHADERed/Objects/ArcBallCamera.h>
 
 namespace ed {
+	struct AppEvent;
+	
 	class DebugGeometryOutputUI : public UIView {
 	public:
 		DebugGeometryOutputUI(GUIManager* ui, ed::InterfaceManager* objects, const std::string& name = "", bool visible = true);
 		~DebugGeometryOutputUI();
 
-		virtual void OnEvent(const SDL_Event& e);
+		virtual void OnEvent(const AppEvent& e);
 		virtual void Update(float delta);
 
 		inline ArcBallCamera* GetCamera() { return &m_camera; }

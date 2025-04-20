@@ -1,5 +1,4 @@
 #pragma once
-#include <SHADERed/AppEvent.h>
 #include <SHADERed/Objects/KeyboardShortcuts.h>
 #include <SHADERed/Objects/ShaderVariableContainer.h>
 #include <SHADERed/Objects/CommandLineOptionParser.h>
@@ -18,6 +17,7 @@ class ImFont;
 struct GLFWwindow;
 
 namespace ed {
+	struct AppEvent;
 	class InterfaceManager;
 	class CreateItemUI;
 	class UIView;

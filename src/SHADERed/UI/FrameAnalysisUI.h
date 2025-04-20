@@ -1,8 +1,9 @@
 #pragma once
 #include <SHADERed/UI/UIView.h>
-#include <SDL2/SDL_events.h>
 
 namespace ed {
+	struct AppEvent;
+
 	class FrameAnalysisUI : public UIView {
 	public:
 		FrameAnalysisUI(GUIManager* ui, ed::InterfaceManager* objects, const std::string& name = "", bool visible = true)
@@ -14,7 +15,7 @@ namespace ed {
 
 		void Process();
 
-		virtual void OnEvent(const SDL_Event& e);
+		virtual void OnEvent(const AppEvent& e);
 		virtual void Update(float delta);
 
 	private:

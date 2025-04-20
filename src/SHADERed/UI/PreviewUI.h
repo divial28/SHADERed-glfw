@@ -7,6 +7,8 @@
 #include <imgui/imgui_internal.h>
 
 namespace ed {
+	struct AppEvent;
+	
 	class PreviewUI : public UIView {
 	public:
 		PreviewUI(GUIManager* ui, ed::InterfaceManager* objects, const std::string& name = "", bool visible = true)
@@ -72,7 +74,7 @@ namespace ed {
 			}
 		}
 
-		virtual void OnEvent(const SDL_Event& e);
+		virtual void OnEvent(const AppEvent& e);
 		virtual void Update(float delta);
 
 		void Duplicate();

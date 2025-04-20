@@ -1,3 +1,4 @@
+#include <SHADERed/AppEvent.h>
 #include <SHADERed/UI/Debug/ValuesUI.h>
 #include <SHADERed/UI/UIHelper.h>
 #include <imgui/imgui.h>
@@ -29,7 +30,7 @@ namespace ed {
 			}
 		}
 	}
-	void DebugValuesUI::OnEvent(const SDL_Event& e)
+	void DebugValuesUI::OnEvent(const AppEvent& e)
 	{
 	}
 	void DebugValuesUI::Update(float delta)

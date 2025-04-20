@@ -4,6 +4,8 @@
 #include <SHADERed/UI/UIView.h>
 
 namespace ed {
+	struct AppEvent;
+	
 	class ObjectListUI : public UIView {
 	public:
 		ObjectListUI(GUIManager* ui, ed::InterfaceManager* objects, const std::string& name = "", bool visible = true)
@@ -14,7 +16,7 @@ namespace ed {
 		}
 		~ObjectListUI() { }
 
-		virtual void OnEvent(const SDL_Event& e);
+		virtual void OnEvent(const AppEvent& e);
 		virtual void Update(float delta);
 
 	private:

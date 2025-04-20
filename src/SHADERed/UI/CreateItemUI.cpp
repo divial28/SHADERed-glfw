@@ -1,3 +1,4 @@
+#include <SHADERed/AppEvent.h>
 #include <SHADERed/UI/CreateItemUI.h>
 #include <SHADERed/Engine/GLUtils.h>
 #include <SHADERed/Engine/GeometryFactory.h>
@@ -43,7 +44,7 @@ namespace ed {
 		Reset();
 	}
 
-	void CreateItemUI::OnEvent(const SDL_Event& e)
+	void CreateItemUI::OnEvent(const AppEvent& e)
 	{
 	}
 	void CreateItemUI::Update(float delta)

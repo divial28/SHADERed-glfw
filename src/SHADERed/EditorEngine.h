@@ -1,11 +1,12 @@
 #pragma once
-#include <SHADERed/AppEvent.h>
 #include <SHADERed/GUIManager.h>
 #include <SHADERed/InterfaceManager.h>
 
 struct GLFWwindow;
 
 namespace ed {
+	struct AppEvent;
+
 	class EditorEngine {
 	public:
 		EditorEngine(GLFWwindow* wnd);

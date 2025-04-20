@@ -1,3 +1,4 @@
+#include <SHADERed/AppEvent.h>
 #include <SHADERed/UI/Tools/StatsPage.h>
 #include <SHADERed/Objects/ThemeContainer.h>
 #include <SHADERed/Objects/ShaderCompiler.h>
@@ -6,7 +7,7 @@
 #include <sstream>
 
 namespace ed {
-	void StatsPage::OnEvent(const SDL_Event& e) { }
+	void StatsPage::OnEvent(const AppEvent& e) { }
 	void StatsPage::Update(float delta)
 	{
 		ImGui::Text("Arithmetic instruction count: %d", m_info.ArithmeticInstCount);

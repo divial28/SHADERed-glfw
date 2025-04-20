@@ -1,3 +1,4 @@
+#include <SHADERed/AppEvent.h>
 #include <SHADERed/UI/Debug/GeometryOutputUI.h>
 #include <SHADERed/Objects/DefaultState.h>
 #include <SHADERed/Objects/SystemVariableManager.h>
@@ -323,7 +324,7 @@ namespace ed {
 		glBindFramebuffer(GL_FRAMEBUFFER, 0);
 		DefaultState::Bind();
 	}
-	void DebugGeometryOutputUI::OnEvent(const SDL_Event& e)
+	void DebugGeometryOutputUI::OnEvent(const AppEvent& e)
 	{
 		if (e.type == SDL_MOUSEBUTTONDOWN)
 			m_mouseContact = ImVec2(e.button.x, e.button.y);

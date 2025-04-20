@@ -1,3 +1,4 @@
+#include <SHADERed/AppEvent.h>
 #include <SHADERed/UI/Debug/FunctionStackUI.h>
 #include <imgui/imgui.h>
 
@@ -33,7 +34,7 @@ namespace ed {
 			}
 		}
 	}
-	void DebugFunctionStackUI::OnEvent(const SDL_Event& e)
+	void DebugFunctionStackUI::OnEvent(const AppEvent& e)
 	{
 	}
 	void DebugFunctionStackUI::Update(float delta)

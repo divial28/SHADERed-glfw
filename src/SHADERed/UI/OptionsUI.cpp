@@ -1,3 +1,4 @@
+#include <SHADERed/AppEvent.h>
 #include <SHADERed/Objects/KeyboardShortcuts.h>
 #include <SHADERed/Objects/Logger.h>
 #include <SHADERed/Objects/Settings.h>
@@ -25,7 +26,7 @@ namespace ed {
 		return true;
 	};
 
-	void OptionsUI::OnEvent(const SDL_Event& e)
+	void OptionsUI::OnEvent(const AppEvent& e)
 	{
 		if (m_page == Page::Shortcuts && m_selectedShortcut != -1) {
 			if (e.type == SDL_KEYDOWN && e.key.repeat == 0) {

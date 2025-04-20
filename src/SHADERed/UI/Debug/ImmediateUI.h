@@ -4,6 +4,8 @@
 #include <functional>
 
 namespace ed {
+	struct AppEvent;
+	
 	struct HistoryData {
 		std::vector<std::string> Data;
 		int Index;
@@ -28,7 +30,7 @@ namespace ed {
 			m_clear();
 		}
 
-		virtual void OnEvent(const SDL_Event& e);
+		virtual void OnEvent(const AppEvent& e);
 		virtual void Update(float delta);
 
 	private:

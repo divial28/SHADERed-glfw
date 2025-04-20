@@ -1,5 +1,4 @@
 #pragma once
-#include <SHADERed/AppEvent.h>
 #include <SHADERed/Objects/DebugInformation.h>
 #include <SHADERed/Objects/DebugAdapterProtocol.h>
 #include <SHADERed/Objects/MessageStack.h>
@@ -12,6 +11,7 @@
 #include <SHADERed/Objects/WebAPI.h>
 
 namespace ed {
+	struct AppEvent;
 	class GUIManager;
 
 	class InterfaceManager {

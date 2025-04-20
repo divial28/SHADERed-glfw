@@ -1,3 +1,4 @@
+#include <SHADERed/AppEvent.h>
 #include <SHADERed/Objects/Settings.h>
 #include <SHADERed/Objects/ThemeContainer.h>
 #include <SHADERed/Options.h>
@@ -6,7 +7,7 @@
 #include <imgui/imgui.h>
 
 namespace ed {
-	void MessageOutputUI::OnEvent(const SDL_Event& e)
+	void MessageOutputUI::OnEvent(const AppEvent& e)
 	{
 	}
 	void MessageOutputUI::Update(float delta)

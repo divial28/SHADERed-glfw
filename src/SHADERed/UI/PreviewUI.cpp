@@ -1,3 +1,4 @@
+#include <SHADERed/AppEvent.h>
 #include <SHADERed/Engine/GLUtils.h>
 #include <SHADERed/Engine/GeometryFactory.h>
 #include <SHADERed/Objects/DefaultState.h>
@@ -230,7 +231,7 @@ namespace ed {
 		});
 
 	}
-	void PreviewUI::OnEvent(const SDL_Event& e)
+	void PreviewUI::OnEvent(const AppEvent& e)
 	{
 		if (e.type == SDL_MOUSEBUTTONDOWN) {
 			const Uint8* keyState = SDL_GetKeyboardState(NULL);

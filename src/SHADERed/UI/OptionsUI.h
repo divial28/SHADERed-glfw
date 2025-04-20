@@ -5,6 +5,8 @@
 #include <ImGuiColorTextEdit/TextEditor.h>
 
 namespace ed {
+	struct AppEvent;
+	
 	class OptionsUI : public UIView {
 	public:
 		enum class Page {
@@ -37,7 +39,7 @@ namespace ed {
 		}
 		//using UIView::UIView;
 
-		virtual void OnEvent(const SDL_Event& e);
+		virtual void OnEvent(const AppEvent& e);
 		virtual void Update(float delta);
 
 		inline bool IsListening() { return m_page == Page::Shortcuts && m_selectedShortcut != -1; }

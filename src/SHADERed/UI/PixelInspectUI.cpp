@@ -1,3 +1,4 @@
+#include <SHADERed/AppEvent.h>
 #include <SHADERed/Objects/DebugInformation.h>
 #include <SHADERed/Objects/Settings.h>
 #include <SHADERed/Objects/ShaderCompiler.h>
@@ -24,7 +25,7 @@
 #define BUTTON_SIZE Settings::Instance().CalculateSize(20)
 
 namespace ed {
-	void PixelInspectUI::OnEvent(const SDL_Event& e)
+	void PixelInspectUI::OnEvent(const AppEvent& e)
 	{
 	}
 	void PixelInspectUI::Update(float delta)

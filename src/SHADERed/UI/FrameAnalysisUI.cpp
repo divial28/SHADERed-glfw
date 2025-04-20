@@ -1,3 +1,4 @@
+#include <SHADERed/AppEvent.h>
 #include <SHADERed/UI/FrameAnalysisUI.h>
 #include <SHADERed/UI/PixelInspectUI.h>
 
@@ -35,7 +36,7 @@ namespace ed {
 		// free memory
 		free(pixels);
 	}
-	void FrameAnalysisUI::OnEvent(const SDL_Event& e)
+	void FrameAnalysisUI::OnEvent(const AppEvent& e)
 	{
 	}
 	void FrameAnalysisUI::Update(float delta)

@@ -4,6 +4,8 @@
 #include <SHADERed/Engine/Model.h>
 
 namespace ed {
+	struct AppEvent;
+	
 	class DebugVectorWatchUI : public UIView {
 	public:
 		DebugVectorWatchUI(GUIManager* ui, ed::InterfaceManager* objects, const std::string& name = "", bool visible = true)
@@ -17,7 +19,7 @@ namespace ed {
 
 		void Refresh();
 
-		virtual void OnEvent(const SDL_Event& e);
+		virtual void OnEvent(const AppEvent& e);
 		virtual void Update(float delta);
 
 		inline ArcBallCamera* GetCamera() { return &m_camera; }

@@ -5,6 +5,8 @@
 #include <ImGuiColorTextEdit/TextEditor.h>
 
 namespace ed {
+	struct AppEvent;
+	
 	class StatsPage : public UIView {
 	public:
 		StatsPage(GUIManager* ui, ed::InterfaceManager* objects, const std::string& name = "", bool visible = true)
@@ -13,7 +15,7 @@ namespace ed {
 			m_spirv.SetReadOnly(true);
 		}
 
-		virtual void OnEvent(const SDL_Event& e);
+		virtual void OnEvent(const AppEvent& e);
 		virtual void Update(float delta);
 
 		void Refresh(PipelineItem* item, ShaderStage stage);

@@ -1,3 +1,4 @@
+#include <SHADERed/AppEvent.h>
 #include <SHADERed/Engine/GLUtils.h>
 #include <SHADERed/Engine/GeometryFactory.h>
 #include <SHADERed/GUIManager.h>
@@ -24,7 +25,7 @@
 #define BUTTON_ICON_SIZE ImVec2(Settings::Instance().CalculateSize(22.5f), 0)
 
 namespace ed {
-	void PipelineUI::OnEvent(const SDL_Event& e)
+	void PipelineUI::OnEvent(const AppEvent& e)
 	{
 	}
 	void PipelineUI::Update(float delta)

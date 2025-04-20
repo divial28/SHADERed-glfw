@@ -1,3 +1,4 @@
+#include <SHADERed/AppEvent.h>
 #include <SHADERed/UI/ProfilerUI.h>
 #include <SHADERed/Objects/Settings.h>
 
@@ -7,7 +8,7 @@
 #define PROFILER_PADDING 5.0f
 
 namespace ed {
-	void ProfilerUI::OnEvent(const SDL_Event& e)
+	void ProfilerUI::OnEvent(const AppEvent& e)
 	{
 	}
 	void ProfilerUI::Update(float delta)

@@ -9,6 +9,7 @@
 #define CURRENT_PLUGINAPI_VERSION 3
 
 namespace ed {
+	struct AppEvent;
 	class InterfaceManager;
 	class GUIManager;
 
@@ -46,7 +47,7 @@ namespace ed {
 
 		std::vector<InputLayoutItem> BuildInputLayout(IPlugin1* plugin, const char* type, void* pldata);
 
-		void OnEvent(const SDL_Event& e);
+		void OnEvent(const AppEvent& e);
 
 		inline const std::vector<IPlugin1*>& Plugins() { return m_plugins; }
 

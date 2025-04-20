@@ -4,6 +4,8 @@
 #include <SHADERed/UI/UIView.h>
 
 namespace ed {
+	struct AppEvent;
+	
 	class PipelineUI : public UIView {
 	public:
 		PipelineUI(GUIManager* ui, ed::InterfaceManager* objects, const std::string& name = "", bool visible = true)
@@ -23,7 +25,7 @@ namespace ed {
 			m_isConfirmDeleteOpened = false;
 		}
 
-		virtual void OnEvent(const SDL_Event& e);
+		virtual void OnEvent(const AppEvent& e);
 		virtual void Update(float delta);
 
 		inline void UpdateLanguageList() { m_createUI.UpdateLanguageList(); }

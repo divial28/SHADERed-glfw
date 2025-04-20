@@ -4,6 +4,8 @@
 #include <vector>
 
 namespace ed {
+	struct AppEvent;
+	
 	class DebugAutoUI : public UIView {
 	public:
 		DebugAutoUI(GUIManager* ui, ed::InterfaceManager* objects, const std::string& name = "", bool visible = true)
@@ -18,7 +20,7 @@ namespace ed {
 			m_update = true;
 		}
 
-		virtual void OnEvent(const SDL_Event& e);
+		virtual void OnEvent(const AppEvent& e);
 		virtual void Update(float delta);
 
 	private:

@@ -1,9 +1,10 @@
+#include <SHADERed/AppEvent.h>
 #include <SHADERed/UI/Debug/AutoUI.h>
 #include <SHADERed/Objects/Settings.h>
 #include <imgui/imgui.h>
 
 namespace ed {
-	void DebugAutoUI::OnEvent(const SDL_Event& e)
+	void DebugAutoUI::OnEvent(const AppEvent& e)
 	{
 	}
 	void DebugAutoUI::Update(float delta)

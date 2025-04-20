@@ -1,3 +1,4 @@
+#include <SHADERed/AppEvent.h>
 #include <SHADERed/Engine/GLUtils.h>
 #include <SHADERed/Engine/GeometryFactory.h>
 #include <SHADERed/Objects/Logger.h>
@@ -16,7 +17,7 @@
 #define IMAGE_CONTEXT_WIDTH Settings::Instance().CalculateSize(150)
 
 namespace ed {
-	void ObjectListUI::OnEvent(const SDL_Event& e)
+	void ObjectListUI::OnEvent(const AppEvent& e)
 	{
 	}
 	void ObjectListUI::Update(float delta)
